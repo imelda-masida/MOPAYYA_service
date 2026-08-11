@@ -65,5 +65,92 @@ def init_db():
 
 
     
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+
+@app.route('/api/membres', methods=['GET'])
+def get_membres():
+    conn = get_db()
+    cursor = conn.cursor()
+    membres = cursor.execute('''
+        SELECT m.id, m.nom_complet, d.nom as departement, d.couleur_badge, d.id as dept_id 
+        FROM membres m 
+        JOIN departements d ON m.departement_id = d.id
+    ''').fetchall()
+    conn.close()
+    return jsonify([dict(m) for m in membres])
+
+
+@app.route('/api/entree', methods=['POST'])
+def enregistrer_entree():
+    data = request.json
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    
+    badge = cursor.execute('''
+        SELECT id, lettre FROM badges 
+        WHERE departement_id = ? AND est_disponible = 1 
+        LIMIT 1
+    ''', (data['dept_id'],)).fetchone()
+    
+    if not badge:
+        conn.close()
+        return jsonify({'status': 'error', 'message': 'Aucun badge disponible pour ce département'}), 400
+    
+    heure_actuelle = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    
+    cursor.execute('''
+        INSERT INTO visites (visiteur_nom, visiteur_tel, visiteur_fonction, visiteur_adresse, visiteur_genre, membre_id, badge_id, heure_entree)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (data['nom'], data['tel'], data['fonction'], data['adresse'], data['genre'], data['membre_id'], badge['id'], heure_actuelle))
+    
+    
+    cursor.execute('UPDATE badges SET est_disponible = 0 WHERE id = ?', (badge['id'],))
+    
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'success', 'badge': badge['lettre'], 'heure': heure_actuelle})
+
+
+@app.route('/api/sortie', methods=['POST'])
+def enregistrer_sortie():
+    data = request.json
+    lettre_badge = data['badge_lettre'].strip().upper()
+    heure_actuelle = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    
+    badge = cursor.execute('SELECT id FROM badges WHERE lettre = ?', (lettre_badge,)).fetchone()
+    if not badge:
+        conn.close()
+        return jsonify({'status': 'error', 'message': 'Badge introuvable'}), 404
+        
+    visite = cursor.execute('''
+        SELECT id FROM visites 
+        WHERE badge_id = ? AND heure_sortie IS NULL 
+        ORDER BY id DESC LIMIT 1
+    ''', (badge['id'],)).fetchone()
+    
+    if not visite:
+        conn.close()
+        return jsonify({'status': 'error', 'message': 'Aucune visite active trouvée pour ce badge'}), 404
+    
+    
+    cursor.execute('UPDATE visites SET heure_sortie = ? WHERE id = ?', (heure_actuelle, visite['id']))
+    cursor.execute('UPDATE badges SET est_disponible = 1 WHERE id = ?', (badge['id'],))
+    
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'success', 'heure': heure_actuelle})
+
+if __name__ == '__main__':
+    init_db()
+    app.run(debug=True, port=5000)
 
  
