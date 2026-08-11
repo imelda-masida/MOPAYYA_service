@@ -10,12 +10,12 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-    def init_db():
-        conn = get_db()
-        cursor = conn.cursor()
+def init_db():
+    conn = get_db()
+    cursor = conn.cursor()
 
 
-        cursor.execute('''
+    cursor.execute('''
             CREATE TABLE IF NOT EXISTS departments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL
@@ -23,7 +23,7 @@ def get_db():
             )
         ''')
 
-        cursor.execute('''
+    cursor.execute('''
             CREATE TABLE IF NOT EXISTS members (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name_complet TEXT NOT NULL,
@@ -33,7 +33,7 @@ def get_db():
         ''')
 
 
-       cursor.execute('''
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS badges (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             lettre TEXT NOT NULL,
