@@ -1,0 +1,21 @@
+*, *::after, *::before{
+    box-sizing: border-box;
+    font-family: 'system-ui', sans-serif;
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+
+
+.container{
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.4), transparent;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-image: url('/image/bg.jpeg');
+}
+
