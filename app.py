@@ -18,7 +18,7 @@ def init_db():
     cursor.execute('''
             CREATE TABLE IF NOT EXISTS departments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
+                name TEXT NOT NULL,
                 couleur_badge TEXT NOT NULL
             )
         ''')
