@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, jsonify
 import sqlite3
 from datetime import datetime
 
+
 app = Flask(__name__)
 DB_NAME = 'database.db'
 
@@ -152,5 +153,19 @@ def enregistrer_sortie():
 if __name__ == '__main__':
     init_db()
     app.run(debug=True, port=5000)
+
+
+from flask import send_file
+from utils.reports import exporter_visites_csv, generer_rapport_pdf
+
+@app.route('/api/rapport/csv', methods=['GET'])
+def telecharger_csv():
+    fichier = exporter_visites_csv("/tmp/rapport_visites.csv")
+    return send_file(fichier, as_attachment=True, download_name="rapport_visites.csv")
+
+@app.route('/api/rapport/pdf', methods=['GET'])
+def telecharger_pdf():
+    fichier = generer_rapport_pdf("/tmp/rapport_visites.pdf")
+    return send_file(fichier, as_attachment=True, download_name="rapport_visites.pdf")
 
  
