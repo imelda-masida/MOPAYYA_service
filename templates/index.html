@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/app.js"></script>
+    <title>Formulaire</title>
+</head>
+<body class="bg-light">
+
+    <div class="container">
+        <div class="step-card bg-white text-center">
+            
+            <!-- ÉTAPE 1 : Choix de la Langue -->
+            <div id="step-lang" class="step">
+                <h2 class="mb-4">Bienvenue / Welcome</h2>
+                <p class="text-muted mb-4">Veuillez choisir votre langue / Please select your language</p>
+                <div class="d-grid gap-3">
+                    <button class="btn btn-primary btn-lg" onclick="choisirLangue('fr')">🇫🇷 Français</button>
+                    <button class="btn btn-outline-primary btn-lg" onclick="choisirLangue('en')">🇬🇧 English</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 2 : Choix de l'Action (Entrée / Sortie) -->
+            <div id="step-action" class="step hidden">
+                <h2 class="mb-4" id="txt-action-title">Que souhaitez-vous faire ?</h2>
+                <div class="d-grid gap-3">
+                    <button class="btn btn-success btn-lg" onclick="choisirAction('entree')">📥 Enregistrer une Entrée</button>
+                    <button class="btn btn-warning btn-lg" onclick="choisirAction('sortie')">📤 Enregistrer une Sortie</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 3 : Choix de l'Hôte / Membre à visiter (Entrée uniquement) -->
+            <div id="step-hote" class="step hidden">
+                <h3 class="mb-3">Qui venez-vous visiter ?</h3>
+                <div class="mb-3">
+                    <select id="select-hote" class="form-select form-select-lg">
+                        <option value="" selected disabled>Chargement des membres...</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary w-100" onclick="validerHote()">Suivant</button>
+            </div>
+
+            <!-- ÉTAPE 4 : Instructions Badge (Entrée uniquement) -->
+            <div id="step-badge" class="step hidden">
+                <h3 class="mb-3">Prenez votre badge</h3>
+                <div class="alert alert-info">
+                    <p class="mb-0">Veuillez prendre un badge disponible correspondant au département sélectionné.</p>
+                </div>
+                <button class="btn btn-success w-100" onclick="validerBadge()">J'ai pris mon badge / Continuons</button>
+            </div>
+
+            <!-- ÉTAPE 5 : Formulaire d'Identité du Visiteur (Entrée) -->
+            <div id="step-form" class="step hidden">
+                <h3 class="mb-3">Vos Informations</h3>
+                <form id="form-visiteur" onsubmit="soumettreEntree(event)">
+                    <div class="mb-3 text-start">
+                        <label for="nom" class="form-label">Nom complet *</label>
+                        <input type="text" id="nom" class="form-control" placeholder="Ex: Jean Dupont" required>
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label for="tel" class="form-label">Numéro de téléphone *</label>
+                        <input type="tel" id="tel" class="form-control" placeholder="Ex: +243 ..." required>
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label for="fonction" class="form-label">Fonction / Entreprise</label>
+                        <input type="text" id="fonction" class="form-control" placeholder="Ex: Consultant Tech">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label for="adresse" class="form-label">Adresse</label>
+                        <input type="text" id="adresse" class="form-control" placeholder="Ex: Kinshasa / Gombe">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label for="genre" class="form-label">Genre *</label>
+                        <select id="genre" class="form-select" required>
+                            <option value="M">Masculin</option>
+                            <option value="F">Féminin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">Valider l'Entrée</button>
+                </form>
+            </div>
+
+            <!-- ÉTAPE 6 : Formulaire de Sortie (Saisie de la lettre du badge) -->
+            <div id="step-sortie" class="step hidden">
+                <h3 class="mb-3">Enregistrer votre Départ</h3>
+                <form id="form-sortie" onsubmit="soumettreSortie(event)">
+                    <div class="mb-3 text-start">
+                        <label for="badge-lettre" class="form-label">Entrez la lettre/code de votre badge *</label>
+                        <input type="text" id="badge-lettre" class="form-control form-control-lg text-center text-uppercase" placeholder="Ex: A1" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 btn-lg">Restituer le badge & Sortir</button>
+                </form>
+            </div>
+
+            <!-- ÉTAPE 7 : Écran de Confirmation -->
+            <div id="step-confirmation" class="step hidden">
+                <div class="alert alert-success py-4">
+                    <h4 class="alert-heading" id="conf-titre">Opération réussie !</h4>
+                    <p id="conf-message" class="mb-0">Merci d'avoir utilisé MOPAYA.</p>
+                </div>
+                <button class="btn btn-outline-secondary w-100 mt-3" onclick="reinitialiser()">Retour à l'accueil</button>
+            </div>
+
+        </div>
+    </div>
+
+    
+</body>
+</html>
