@@ -7,31 +7,34 @@
     <script src="/static/js/app.js"></script>
     <title>Formulaire</title>
 </head>
+
+
 <body class="bg-light">
 
+    
     <div class="container">
         <div class="step-card bg-white text-center">
             
-            <!-- ÉTAPE 1 : Choix de la Langue -->
+            
             <div id="step-lang" class="step">
-                <h2 class="mb-4">Bienvenue / Welcome</h2>
-                <p class="text-muted mb-4">Veuillez choisir votre langue / Please select your language</p>
+                <h1 class="mb-4">Bienvenue | Welcome</h1>
+                <p class="text-muted mb-4"><strong>Veuillez choisir votre langue | Please select your language</strong></p>
                 <div class="d-grid gap-3">
-                    <button class="btn btn-primary btn-lg" onclick="choisirLangue('fr')">🇫🇷 Français</button>
-                    <button class="btn btn-outline-primary btn-lg" onclick="choisirLangue('en')">🇬🇧 English</button>
+                    <button class="btn btn-primary btn-lg" onclick="choisirLangue('fr')"> Français</button>
+                    <button class="btn btn-outline-primary btn-lg" onclick="choisirLangue('en')">English</button>
                 </div>
             </div>
 
-            <!-- ÉTAPE 2 : Choix de l'Action (Entrée / Sortie) -->
+            
             <div id="step-action" class="step hidden">
                 <h2 class="mb-4" id="txt-action-title">Que souhaitez-vous faire ?</h2>
                 <div class="d-grid gap-3">
-                    <button class="btn btn-success btn-lg" onclick="choisirAction('entree')">📥 Enregistrer une Entrée</button>
-                    <button class="btn btn-warning btn-lg" onclick="choisirAction('sortie')">📤 Enregistrer une Sortie</button>
+                    <button class="btn btn-success btn-lg" onclick="choisirAction('entree')"> Enregistrer une Entrée</button>
+                    <button class="btn btn-warning btn-lg" onclick="choisirAction('sortie')">Enregistrer une Sortie</button>
                 </div>
             </div>
 
-            <!-- ÉTAPE 3 : Choix de l'Hôte / Membre à visiter (Entrée uniquement) -->
+            
             <div id="step-hote" class="step hidden">
                 <h3 class="mb-3">Qui venez-vous visiter ?</h3>
                 <div class="mb-3">
@@ -42,7 +45,7 @@
                 <button class="btn btn-primary w-100" onclick="validerHote()">Suivant</button>
             </div>
 
-            <!-- ÉTAPE 4 : Instructions Badge (Entrée uniquement) -->
+            
             <div id="step-badge" class="step hidden">
                 <h3 class="mb-3">Prenez votre badge</h3>
                 <div class="alert alert-info">
@@ -51,7 +54,7 @@
                 <button class="btn btn-success w-100" onclick="validerBadge()">J'ai pris mon badge / Continuons</button>
             </div>
 
-            <!-- ÉTAPE 5 : Formulaire d'Identité du Visiteur (Entrée) -->
+            
             <div id="step-form" class="step hidden">
                 <h3 class="mb-3">Vos Informations</h3>
                 <form id="form-visiteur" onsubmit="soumettreEntree(event)">
@@ -82,7 +85,7 @@
                 </form>
             </div>
 
-            <!-- ÉTAPE 6 : Formulaire de Sortie (Saisie de la lettre du badge) -->
+            
             <div id="step-sortie" class="step hidden">
                 <h3 class="mb-3">Enregistrer votre Départ</h3>
                 <form id="form-sortie" onsubmit="soumettreSortie(event)">
@@ -94,7 +97,7 @@
                 </form>
             </div>
 
-            <!-- ÉTAPE 7 : Écran de Confirmation -->
+            
             <div id="step-confirmation" class="step hidden">
                 <div class="alert alert-success py-4">
                     <h4 class="alert-heading" id="conf-titre">Opération réussie !</h4>

@@ -5,9 +5,7 @@ from datetime import datetime
 app = Flask(__name__)
 DB_NAME = 'database.db'
 
-# ---------------------------------------------------------
-# HELPER BASE DE DONNÉES
-# ---------------------------------------------------------
+
 def get_db_connection():
     """Crée une connexion à la base de données avec gestion des colonnes par nom."""
     conn = sqlite3.connect(DB_NAME)
