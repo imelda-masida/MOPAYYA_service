@@ -242,73 +242,79 @@ def enregistrer_sortie():
 
 
 # ---------------------------------------------------------
-# ROUTE D'EXPORT DU RAPPORT HEBDOMADAIRE
+# ROUTE D'EXPORT DU RAPPORT HEBDOMADAIRE (SÉCURISÉE)
 # ---------------------------------------------------------
 @app.route('/api/rapport/semaine', methods=['GET'])
 def rapport_semaine():
   """Exporte la liste des visites enregistrées durant les 7 derniers jours."""
-  conn = get_db_connection()
-  c = conn.cursor()
+  try:
+    conn = get_db_connection()
+    c = conn.cursor()
 
-  # Requête SQL pour joindre la visite aux membres, départements et badges
-  query = """
-        SELECT 
-            v.id,
-            v.nom_complet AS visiteur,
-            v.telephone,
-            v.fonction,
-            v.adresse,
-            v.genre,
-            m.nom_complet AS hôte,
-            d.nom AS département,
-            b.lettre AS badge,
-            v.heure_entree,
-            v.heure_sortie
-        FROM visites v
-        LEFT JOIN membres m ON v.membre_id = m.id
-        LEFT JOIN departements d ON m.departement_id = d.id
-        LEFT JOIN badges b ON v.badge_id = b.id
-        WHERE v.heure_entree >= datetime('now', '-7 days')
-        ORDER BY v.heure_entree DESC
-    """
-  c.execute(query)
-  visites = c.fetchall()
-  conn.close()
+    # Alias SQL sans caractères accentués pour éviter les plantages avec dict(row)
+    query = """
+            SELECT 
+                v.id,
+                v.nom_complet AS visiteur,
+                COALESCE(v.telephone, '') AS telephone,
+                COALESCE(v.fonction, '') AS fonction,
+                COALESCE(v.adresse, '') AS adresse,
+                COALESCE(v.genre, '') AS genre,
+                COALESCE(m.nom_complet, 'N/A') AS hote,
+                COALESCE(d.nom, 'N/A') AS departement,
+                COALESCE(b.lettre, 'N/A') AS badge,
+                COALESCE(v.heure_entree, '') AS heure_entree,
+                COALESCE(v.heure_sortie, '') AS heure_sortie
+            FROM visites v
+            LEFT JOIN membres m ON v.membre_id = m.id
+            LEFT JOIN departements d ON m.departement_id = d.id
+            LEFT JOIN badges b ON v.badge_id = b.id
+            WHERE v.heure_entree >= datetime('now', '-7 days') OR v.heure_entree IS NULL
+            ORDER BY v.heure_entree DESC
+        """
+    c.execute(query)
+    visites = c.fetchall()
+    conn.close()
 
-  # Si ?format=csv est présent dans l'URL, générer un fichier CSV téléchargeable
-  if request.args.get('format') == 'csv':
-    output = StringIO()
-    writer = csv.writer(output)
+    # Si ?format=csv est présent dans l'URL, générer un fichier CSV téléchargeable
+    if request.args.get('format') == 'csv':
+      output = StringIO()
+      writer = csv.writer(output)
 
-    # Entêtes du fichier CSV
-    writer.writerow([
-        'ID',
-        'Visiteur',
-        'Téléphone',
-        'Fonction',
-        'Adresse',
-        'Genre',
-        'Hôte Visité',
-        'Département',
-        'Badge',
-        'Heure Entrée',
-        'Heure Sortie',
-    ])
+      # Entêtes du fichier CSV avec accents
+      writer.writerow([
+          'ID',
+          'Visiteur',
+          'Téléphone',
+          'Fonction',
+          'Adresse',
+          'Genre',
+          'Hôte Visité',
+          'Département',
+          'Badge',
+          'Heure Entrée',
+          'Heure Sortie',
+      ])
 
-    for row in visites:
-      writer.writerow(list(row))
+      for row in visites:
+        # Conversion sécurisée de chaque élément en chaîne
+        writer.writerow([str(val) if val is not None else '' for val in row])
 
-    output.seek(0)
-    filename = f"rapport_visites_{datetime.now().strftime('%Y_%m_%d')}.csv"
+      output.seek(0)
+      filename = f"rapport_visites_{datetime.now().strftime('%Y_%m_%d')}.csv"
 
-    return Response(
-        output.getvalue(),
-        mimetype='text/csv',
-        headers={'Content-Disposition': f'attachment;filename={filename}'},
-    )
+      return Response(
+          output.getvalue(),
+          mimetype='text/csv',
+          headers={'Content-Disposition': f'attachment;filename={filename}'},
+      )
 
-  # Sinon (par défaut) : retourner les données en format JSON
-  return jsonify([dict(row) for row in visites]), 200
+    # Par défaut : retourner les données au format JSON
+    return jsonify([dict(row) for row in visites]), 200
+
+  except Exception as e:
+    print(f'Erreur dans /api/rapport/semaine : {e}')
+    return jsonify({'erreur': str(e)}), 500
 
 
 if __name__ == '__main__':
