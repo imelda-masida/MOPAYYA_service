@@ -1,0 +1,63 @@
+python3 -c "
+import sqlite3
+
+conn = sqlite3.connect('database.db')
+c = conn.cursor()
+
+# 1. Ajouter les départements
+c.execute(\"INSERT OR IGNORE INTO departements (id, nom, couleur_badge) VALUES (1, 'Informatique', 'Bleu'), (2, 'Ressources Humaines', 'Vert'), (3, 'Direction', 'Rouge')\")
+
+# 2. Ajouter les membres (hôtes à visiter)
+c.execute(\"INSERT OR IGNORE INTO membres (nom_complet, departement_id) VALUES ('Jean Dupont', 1), ('Marie Claire', 2), ('Alain Bamba', 3)\")
+
+# 3. Ajouter les badges associés aux départements
+c.execute(\"INSERT OR IGNORE INTO badges (lettre, departement_id, est_disponible) VALUES ('A1', 1, 1), ('A2', 1, 1), ('B1', 2, 1), ('C1', 3, 1)\")
+
+conn.commit()
+conn.close()
+print('Départements, membres et badges ajoutés avec succès !')
+"
+
+total
+python3 -c "
+import sqlite3
+
+conn = sqlite3.connect('database.db')
+c = conn.cursor()
+
+# Supprimer le contenu de toutes les tables
+c.execute('DELETE FROM visites')
+c.execute('DELETE FROM badges')
+c.execute('DELETE FROM membres')
+c.execute('DELETE FROM departements')
+
+conn.commit()
+conn.close()
+print('Base de données complètement vidée !')
+"
+
+partiel
+python3 -c "
+import sqlite3
+conn = sqlite3.connect('database.db')
+c = conn.cursor()
+
+c.execute(\"DELETE FROM membres WHERE nom_complet = 'Jean Dupont'\")
+
+conn.commit()
+conn.close()
+print('Membre supprimé !')
+"
+
+departement
+python3 -c "
+import sqlite3
+conn = sqlite3.connect('database.db')
+c = conn.cursor()
+
+c.execute(\"DELETE FROM departements WHERE nom = 'Ressources Humaines'\")
+
+conn.commit()
+conn.close()
+print('Département supprimé !')
+"
