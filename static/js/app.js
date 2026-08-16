@@ -1,7 +1,7 @@
-// Variable globale pour stocker les choix en cours
+
 let sessionData = {
     langue: 'fr',
-    action: null,       // 'entree' ou 'sortie'
+    action: null,       
     hote_id: null
 };
 
@@ -18,7 +18,7 @@ const traductions = {
         btnSuivant: "Suivant",
         titleBadge: "Prenez votre badge",
         descBadge: "Veuillez prendre un badge disponible correspondant au département sélectionné.",
-        btnBadgeOk: "J'ai pris mon badge / Continuons",
+        btnBadgeOk: "J'ai pris mon badge | Continuons",
         titleForm: "Vos Informations",
         lblNom: "Nom complet ",
         lblTel: "Numéro de téléphone ",
@@ -47,11 +47,11 @@ const traductions = {
         btnSuivant: "Next",
         titleBadge: "Pick up your badge",
         descBadge: "Please take an available badge corresponding to the selected department.",
-        btnBadgeOk: "I took my badge / Continue",
+        btnBadgeOk: "I took my badge | Continue",
         titleForm: "Your Details",
         lblNom: "Full Name ",
         lblTel: "Phone Number ",
-        lblFonction: "Job Title / Company",
+        lblFonction: "Job Title | Company",
         lblAdresse: "Address",
         lblGenre: "Gender ",
         optionM: "Male",
