@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/style.css">
-    <script src="/static/js/app.js"></script>
+    <script src="/static/js/app.js" defer></script>
     <title>Formulaire</title>
 </head>
-
 
 <body class="bg-light">
     <a href="/api/rapport/semaine?format=csv" class="btn-download" download><strong>=</strong></a>
@@ -45,33 +44,24 @@
             </div>
 
             
-            <div id="step-badge" class="step hidden">
-                <h3 class="mb-3">Prenez votre badge</h3>
-                <div class="alert alert-info">
-                    <p class="mb-0">Veuillez prendre un badge disponible correspondant au département sélectionné.</p>
-                </div>
-                <button class="btn btn-success w-100" onclick="validerBadge()">J'ai pris mon badge / Continuons</button>
-            </div>
-
-            
             <div id="step-form" class="step hidden">
                 <h3 class="mb-3">Vos Informations</h3>
-                <form id="form-visiteur" onsubmit="soumettreEntree(event)">
+                <form id="form-visiteur" autocomplete="off" onsubmit="soumettreEntree(event)">
                     <div class="mb-3 text-start">
                         <label for="nom" class="form-label">Nom complet </label>
-                        <input type="text" id="nom" class="form-control" placeholder="Ex: Jean Dupont" required>
+                        <input type="text" id="nom" class="form-control" placeholder="Ex: Jean Dupont" autocomplete="off" required>
                     </div>
                     <div class="mb-3 text-start">
                         <label for="tel" class="form-label">Numéro de téléphone </label>
-                        <input type="tel" id="tel" class="form-control" placeholder="Ex: +243 ..." required>
+                        <input type="tel" id="tel" class="form-control" placeholder="Ex: +243 ..." autocomplete="off" required>
                     </div>
                     <div class="mb-3 text-start">
                         <label for="fonction" class="form-label">Fonction | Entreprise</label>
-                        <input type="text" id="fonction" class="form-control" placeholder="Ex: Consultant Tech">
+                        <input type="text" id="fonction" class="form-control" placeholder="Ex: Consultant Tech" autocomplete="off">
                     </div>
                     <div class="mb-3 text-start">
                         <label for="adresse" class="form-label">Adresse</label>
-                        <input type="text" id="adresse" class="form-control" placeholder="Ex: Kinshasa / Gombe">
+                        <input type="text" id="adresse" class="form-control" placeholder="Ex: Kinshasa / Gombe" autocomplete="off">
                     </div>
                     <div class="mb-3 text-start">
                         <label for="genre" class="form-label">Genre </label>
@@ -87,10 +77,10 @@
             
             <div id="step-sortie" class="step hidden">
                 <h3 class="mb-3">Enregistrer votre Départ</h3>
-                <form id="form-sortie" onsubmit="soumettreSortie(event)">
+                <form id="form-sortie" autocomplete="off" onsubmit="soumettreSortie(event)">
                     <div class="mb-3 text-start">
-                        <label for="badge-lettre" class="form-label">Entrez la lettre/code de votre badge *</label>
-                        <input type="text" id="badge-lettre" class="form-control form-control-lg text-center text-uppercase" placeholder="Ex: A1" required>
+                        <label for="badge-lettre" class="form-label">Entrez la lettre | code de votre badge </label>
+                        <input type="text" id="badge-lettre" class="form-control form-control-lg text-center text-uppercase" placeholder="Ex: A1" autocomplete="off" required>
                     </div>
                     <button type="submit" class="btn btn-warning w-100 btn-lg">Restituer le badge & Sortir</button>
                 </form>
@@ -107,7 +97,5 @@
 
         </div>
     </div>
-
-    
 </body>
 </html>

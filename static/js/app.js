@@ -1,13 +1,10 @@
-
 let sessionData = {
     langue: 'fr',
     action: null,       
     hote_id: null
 };
 
-
 // DICTIONNAIRE DE TRADUCTION (i18n)
-
 const traductions = {
     fr: {
         titleAction: "Que souhaitez-vous faire ?",
@@ -16,9 +13,6 @@ const traductions = {
         titleHote: "Qui venez-vous visiter ?",
         optionDefaultHote: "-- Choisissez un membre --",
         btnSuivant: "Suivant",
-        titleBadge: "Prenez votre badge",
-        descBadge: "Veuillez prendre un badge disponible correspondant au département sélectionné.",
-        btnBadgeOk: "J'ai pris mon badge | Continuons",
         titleForm: "Vos Informations",
         lblNom: "Nom complet ",
         lblTel: "Numéro de téléphone ",
@@ -29,7 +23,7 @@ const traductions = {
         optionF: "Féminin",
         btnValiderEntree: "Valider l'Entrée",
         titleSortie: "Enregistrer votre Départ",
-        lblBadgeCode: "Entrez la lettre/code de votre badge ",
+        lblBadgeCode: "Entrez la lettre | code de votre badge ",
         btnValiderSortie: "Restituer le badge & Sortir",
         msgAlertHote: "Veuillez sélectionner le membre que vous venez visiter.",
         confEntreeTitre: "Entrée enregistrée !",
@@ -45,9 +39,6 @@ const traductions = {
         titleHote: "Who are you visiting?",
         optionDefaultHote: "-- Choose a member --",
         btnSuivant: "Next",
-        titleBadge: "Pick up your badge",
-        descBadge: "Please take an available badge corresponding to the selected department.",
-        btnBadgeOk: "I took my badge | Continue",
         titleForm: "Your Details",
         lblNom: "Full Name ",
         lblTel: "Phone Number ",
@@ -58,12 +49,12 @@ const traductions = {
         optionF: "Female",
         btnValiderEntree: "Confirm Entry",
         titleSortie: "Check Out Departure",
-        lblBadgeCode: "Enter your badge letter/code ",
+        lblBadgeCode: "Enter your badge letter | code ",
         btnValiderSortie: "Return badge & Exit",
         msgAlertHote: "Please select the member you are visiting.",
         confEntreeTitre: "Entry Recorded!",
         confEntreeMsg: "Welcome! Your badge has been assigned.",
-        confSortieTitre: "Exit Recorded!",
+        confSortieTitre: "Check Out Recorded!",
         confSortieMsg: "Thank you for your visit and see you soon!",
         btnRetour: "Back to Home"
     }
@@ -88,15 +79,7 @@ function appliquerTraduction() {
     const btnSuivantHote = document.querySelector("#step-hote button");
     if (btnSuivantHote) btnSuivantHote.textContent = t.btnSuivant;
 
-    // Étape 4: Instruction Badge
-    const titleBadge = document.querySelector("#step-badge h3");
-    if (titleBadge) titleBadge.textContent = t.titleBadge;
-    const descBadge = document.querySelector("#step-badge .alert p");
-    if (descBadge) descBadge.textContent = t.descBadge;
-    const btnBadgeOk = document.querySelector("#step-badge button");
-    if (btnBadgeOk) btnBadgeOk.textContent = t.btnBadgeOk;
-
-    // Étape 5: Formulaire Entrée
+    // Étape 4: Formulaire Entrée
     const titleForm = document.querySelector("#step-form h3");
     if (titleForm) titleForm.textContent = t.titleForm;
     const labelsForm = document.querySelectorAll("#step-form .form-label");
@@ -115,7 +98,7 @@ function appliquerTraduction() {
     const btnSubmitEntree = document.querySelector("#form-visiteur button[type='submit']");
     if (btnSubmitEntree) btnSubmitEntree.textContent = t.btnValiderEntree;
 
-    // Étape 6: Formulaire Sortie
+    // Étape 5: Formulaire Sortie
     const titleSortie = document.querySelector("#step-sortie h3");
     if (titleSortie) titleSortie.textContent = t.titleSortie;
     const lblBadge = document.querySelector("#step-sortie .form-label");
@@ -123,15 +106,15 @@ function appliquerTraduction() {
     const btnSubmitSortie = document.querySelector("#form-sortie button[type='submit']");
     if (btnSubmitSortie) btnSubmitSortie.textContent = t.btnValiderSortie;
 
-    // Étape 7: Confirmation
+    // Étape 6: Confirmation
     const btnRetour = document.querySelector("#step-confirmation button");
     if (btnRetour) btnRetour.textContent = t.btnRetour;
 }
 
 
-
+// ==========================================
 // 1. GESTION DE LA NAVIGATION ENTRE ÉTAPES
-
+// ==========================================
 
 function afficherEtape(stepId) {
     const steps = document.querySelectorAll('.step');
@@ -149,8 +132,18 @@ function reinitialiser() {
         action: null,
         hote_id: null
     };
-    document.getElementById('form-visiteur').reset();
-    document.getElementById('form-sortie').reset();
+
+    // Réinitialisation des formulaires HTML
+    const formVisiteur = document.getElementById('form-visiteur');
+    if (formVisiteur) formVisiteur.reset();
+
+    const formSortie = document.getElementById('form-sortie');
+    if (formSortie) formSortie.reset();
+
+    // Réinitialisation de la liste déroulante des hôtes
+    const selectHote = document.getElementById('select-hote');
+    if (selectHote) selectHote.value = '';
+
     afficherEtape('step-lang');
 }
 
@@ -162,7 +155,7 @@ function reinitialiser() {
 // ÉTAPE 1 : Choix de la langue
 function choisirLangue(lang) {
     sessionData.langue = lang;
-    appliquerTraduction(); // Mettre à jour tous les textes du DOM
+    appliquerTraduction();
     afficherEtape('step-action');
 }
 
@@ -171,27 +164,22 @@ function choisirAction(action) {
     sessionData.action = action;
 
     if (action === 'entree') {
-        chargerMembres(); // Récupère les hôtes depuis Flask
+        chargerMembres();
         afficherEtape('step-hote');
     } else if (action === 'sortie') {
         afficherEtape('step-sortie');
     }
 }
 
-// ÉTAPE 3 : Validation de l'hôte sélectionné
+// ÉTAPE 3 : Validation de l'hôte sélectionné -> Va directement au formulaire
 function validerHote() {
     const select = document.getElementById('select-hote');
-    if (!select.value) {
+    if (!select || !select.value) {
         const t = traductions[sessionData.langue || 'fr'];
         alert(t.msgAlertHote);
         return;
     }
     sessionData.hote_id = select.value;
-    afficherEtape('step-badge');
-}
-
-// ÉTAPE 4 : Validation de la prise de badge
-function validerBadge() {
     afficherEtape('step-form');
 }
 
@@ -203,6 +191,8 @@ function validerBadge() {
 // Charger la liste des membres depuis /api/membres
 async function chargerMembres() {
     const select = document.getElementById('select-hote');
+    if (!select) return;
+
     const t = traductions[sessionData.langue || 'fr'];
     select.innerHTML = `<option value="" selected disabled>${t.optionDefaultHote}</option>`;
 
@@ -252,6 +242,10 @@ async function soumettreEntree(event) {
         if (response.ok) {
             document.getElementById('conf-titre').textContent = t.confEntreeTitre;
             document.getElementById('conf-message').textContent = result.message || t.confEntreeMsg;
+            
+            // Vidage des champs pour la personne suivante
+            document.getElementById('form-visiteur').reset();
+            
             afficherEtape('step-confirmation');
         } else {
             alert(result.erreur || "Erreur de traitement.");
@@ -281,6 +275,10 @@ async function soumettreSortie(event) {
         if (response.ok) {
             document.getElementById('conf-titre').textContent = t.confSortieTitre;
             document.getElementById('conf-message').textContent = result.message || t.confSortieMsg;
+            
+            // Vidage du champ de sortie
+            document.getElementById('form-sortie').reset();
+
             afficherEtape('step-confirmation');
         } else {
             alert(result.erreur || "Badge introuvable.");
