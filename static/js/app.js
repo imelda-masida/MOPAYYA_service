@@ -5,9 +5,9 @@ let sessionData = {
     hote_id: null
 };
 
-// ==========================================
+
 // DICTIONNAIRE DE TRADUCTION (i18n)
-// ==========================================
+
 const traductions = {
     fr: {
         titleAction: "Que souhaitez-vous faire ?",
@@ -129,9 +129,9 @@ function appliquerTraduction() {
 }
 
 
-// ==========================================
+
 // 1. GESTION DE LA NAVIGATION ENTRE ÉTAPES
-// ==========================================
+
 
 function afficherEtape(stepId) {
     const steps = document.querySelectorAll('.step');
