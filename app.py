@@ -76,18 +76,18 @@ def init_db():
 init_db()
 
 
-# ---------------------------------------------------------
+
 # ROUTES HTML
-# ---------------------------------------------------------
+
 @app.route('/')
 def home():
   """Affiche la page d'accueil de la borne."""
   return render_template('index.html')
 
 
-# ---------------------------------------------------------
+
 # API REST
-# ---------------------------------------------------------
+
 
 
 @app.route('/api/membres', methods=['GET'])
@@ -262,9 +262,7 @@ def enregistrer_sortie():
     return jsonify({'erreur': f'Erreur interne du serveur : {str(e)}'}), 500
 
 
-# ---------------------------------------------------------
-# ROUTE D'EXPORT DU RAPPORT HEBDOMADAIRE (SÉCURISÉE)
-# ---------------------------------------------------------
+# ROUTE D'EXPORT DU RAPPORT 
 @app.route('/api/rapport/semaine', methods=['GET'])
 def rapport_semaine():
   """Exporte la liste des visites enregistrées durant les 7 derniers jours."""

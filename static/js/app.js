@@ -4,7 +4,7 @@ let sessionData = {
     hote_id: null
 };
 
-// DICTIONNAIRE DE TRADUCTION (i18n)
+
 const traductions = {
     fr: {
         titleAction: "Que souhaitez-vous faire ?",
@@ -60,12 +60,12 @@ const traductions = {
     }
 };
 
-// Application de la traduction sur l'interface HTML
+// Application de la traduction 
 function appliquerTraduction() {
     const lang = sessionData.langue || 'fr';
     const t = traductions[lang];
 
-    // Étape 2: Choix Action
+    // Choix Action
     const txtAction = document.getElementById('txt-action-title');
     if (txtAction) txtAction.textContent = t.titleAction;
     const btnEntree = document.querySelector("#step-action .btn-success");
@@ -73,13 +73,13 @@ function appliquerTraduction() {
     const btnSortie = document.querySelector("#step-action .btn-warning");
     if (btnSortie) btnSortie.textContent = t.btnSortie;
 
-    // Étape 3: Choix Hôte
+    // Choix Hôte
     const titleHote = document.querySelector("#step-hote h3");
     if (titleHote) titleHote.textContent = t.titleHote;
     const btnSuivantHote = document.querySelector("#step-hote button");
     if (btnSuivantHote) btnSuivantHote.textContent = t.btnSuivant;
 
-    // Étape 4: Formulaire Entrée
+    //Formulaire Entrée
     const titleForm = document.querySelector("#step-form h3");
     if (titleForm) titleForm.textContent = t.titleForm;
     const labelsForm = document.querySelectorAll("#step-form .form-label");
@@ -98,7 +98,7 @@ function appliquerTraduction() {
     const btnSubmitEntree = document.querySelector("#form-visiteur button[type='submit']");
     if (btnSubmitEntree) btnSubmitEntree.textContent = t.btnValiderEntree;
 
-    // Étape 5: Formulaire Sortie
+    //Formulaire Sortie
     const titleSortie = document.querySelector("#step-sortie h3");
     if (titleSortie) titleSortie.textContent = t.titleSortie;
     const lblBadge = document.querySelector("#step-sortie .form-label");
@@ -106,15 +106,15 @@ function appliquerTraduction() {
     const btnSubmitSortie = document.querySelector("#form-sortie button[type='submit']");
     if (btnSubmitSortie) btnSubmitSortie.textContent = t.btnValiderSortie;
 
-    // Étape 6: Confirmation
+    //Confirmation
     const btnRetour = document.querySelector("#step-confirmation button");
     if (btnRetour) btnRetour.textContent = t.btnRetour;
 }
 
 
-// ==========================================
-// 1. GESTION DE LA NAVIGATION ENTRE ÉTAPES
-// ==========================================
+
+// GESTION DE LA NAVIGATION ENTRE ÉTAPES
+
 
 function afficherEtape(stepId) {
     const steps = document.querySelectorAll('.step');
@@ -148,18 +148,18 @@ function reinitialiser() {
 }
 
 
-// ==========================================
-// 2. ÉTAPES DU FLUX D'ACCUEIL
-// ==========================================
 
-// ÉTAPE 1 : Choix de la langue
+// FLUX D'ACCUEIL
+
+
+//Choix de la langue
 function choisirLangue(lang) {
     sessionData.langue = lang;
     appliquerTraduction();
     afficherEtape('step-action');
 }
 
-// ÉTAPE 2 : Choix de l'action (Entrée ou Sortie)
+// Choix de l'action 
 function choisirAction(action) {
     sessionData.action = action;
 
@@ -171,7 +171,7 @@ function choisirAction(action) {
     }
 }
 
-// ÉTAPE 3 : Validation de l'hôte sélectionné -> Va directement au formulaire
+// Validation de l'hôte sélectionné -> Va directement au formulaire
 function validerHote() {
     const select = document.getElementById('select-hote');
     if (!select || !select.value) {
@@ -184,9 +184,9 @@ function validerHote() {
 }
 
 
-// ==========================================
-// 3. REQUÊTES API (FETCH)
-// ==========================================
+
+// REQUÊTES API (FETCH)
+
 
 // Charger la liste des membres depuis /api/membres
 async function chargerMembres() {

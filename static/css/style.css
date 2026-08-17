@@ -6,7 +6,7 @@
     outline: none;
 }
 
-/* Arrière-plan général de l'application MOPAYA */
+/* Arrière-plan général */
 body {
     width: 100%;
     min-height: 100vh;
@@ -19,7 +19,7 @@ body {
     background-size: cover;
 }
 
-/* Carte centrale pour l'interface de la borne (Kiosque) */
+/* Carte centrale*/
 .kiosk-card {
     background: rgba(255, 255, 255, 0.95); 
     width: 90%;
