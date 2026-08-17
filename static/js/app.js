@@ -287,4 +287,15 @@ async function soumettreSortie(event) {
         console.error("Erreur de sortie :", erreur);
         alert("Erreur serveur / Server error.");
     }
+
+    // Réinitialise l'interface après le téléchargement du rapport
+   const btnRapport = document.getElementById('btn-rapport');
+   if (btnRapport) {
+    btnRapport.addEventListener('click', () => {
+        
+        setTimeout(() => {
+            reinitialiser();
+        }, 500);
+    });
+}
 }
