@@ -10,73 +10,70 @@
 
 <body class="bg-light">
 
-    
-    <header class="mb-4">
-        <a href="/admin/login" class="btn btn-admin gap-1" style="text-decoration: none;">Espace Admin</a>
-    </header>
-
     <div class="container">
         
-        <div class="step-card text-center">
+        <div class="kiosk-card text-center">
             
             
             <div id="step-lang" class="step">
                 <h1 class="mb-4">Bienvenue | Welcome</h1>
-                <p class="text-muted mb-4"><strong>Veuillez choisir votre langue | Please select your language</strong></p>
-                <div class="d-grid gap-3">
-                    <button class="btn btn-primary btn-lg" onclick="choisirLangue('fr')"> Français</button>
+                <p class="subtitle mb-4"><strong>Veuillez choisir votre langue | Please select your language</strong></p>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-lg" onclick="choisirLangue('fr')">Français</button>
                     <button class="btn btn-outline-primary btn-lg" onclick="choisirLangue('en')">English</button>
+                    <a href="/admin/login" class="btn btn-admin">Espace Admin</a>
                 </div>
             </div>
 
-            
+        
             <div id="step-action" class="step hidden">
                 <h2 class="mb-4" id="txt-action-title">Que souhaitez-vous faire ?</h2>
-                <div class="d-grid gap-3">
-                    <button class="btn btn-success btn-lg" onclick="choisirAction('entree')"> Enregistrer une Entrée</button>
+                <div class="btn-group">
+                    <button class="btn btn-success btn-lg" onclick="choisirAction('entree')">Enregistrer une Entrée</button>
                     <button class="btn btn-warning btn-lg" onclick="choisirAction('sortie')">Enregistrer une Sortie</button>
                 </div>
             </div>
 
-            
+            <!-- ETAPE 3: SÉLECTION DE L'HÔTE -->
             <div id="step-hote" class="step hidden">
                 <h3 class="mb-3">Qui venez-vous visiter ?</h3>
-                <div class="mb-3">
-                    <select id="select-hote" class="form-select form-select-lg">
+                <div class="form-group">
+                    <select id="select-hote" class="form-control">
                         <option value="" selected disabled>Chargement des membres...</option>
                     </select>
                 </div>
-                <button class="btn btn-primary w-100" onclick="validerHote()">Suivant</button>
+                <button class="btn btn-primary" onclick="validerHote()">Suivant</button>
             </div>
 
-        
+            <!-- ETAPE 4: FORMULAIRE ENTREE -->
             <div id="step-form" class="step hidden">
                 <h3 class="mb-3">Vos Informations</h3>
                 <form id="form-visiteur" autocomplete="off" onsubmit="soumettreEntree(event)">
-                    <div class="mb-3 text-start">
-                        <label for="nom" class="form-label">Nom complet </label>
+                    <div class="form-group text-start">
+                        <label for="nom" class="form-label">Nom complet</label>
                         <input type="text" id="nom" class="form-control" placeholder="Ex: Jean Dupont" autocomplete="off" required>
                     </div>
-                    <div class="mb-3 text-start">
-                        <label for="tel" class="form-label">Numéro de téléphone </label>
+                    <div class="form-group text-start">
+                        <label for="tel" class="form-label">Numéro de téléphone</label>
                         <input type="tel" id="tel" class="form-control" placeholder="Ex: +243 ..." autocomplete="off" required>
                     </div>
-                    <div class="mb-3 text-start">
+                    <div class="form-group text-start">
                         <label for="fonction" class="form-label">Fonction | Entreprise</label>
                         <input type="text" id="fonction" class="form-control" placeholder="Ex: Consultant Tech" autocomplete="off">
                     </div>
-                    <div class="mb-3 text-start">
+                    <div class="form-group text-start">
                         <label for="adresse" class="form-label">Adresse</label>
                         <input type="text" id="adresse" class="form-control" placeholder="Ex: Kinshasa / Gombe" autocomplete="off">
                     </div>
-                    <div class="mb-3 text-start">
-                        <label for="genre" class="form-label">Genre </label>
-                        <select id="genre" class="form-select" required>
+                    <div class="form-group text-start">
+                        <label for="genre" class="form-label">Genre</label>
+                        <select id="genre" class="form-control" required>
                             <option value="M">Masculin</option>
                             <option value="F">Féminin</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 btn-lg">Valider l'Entrée</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Valider l'Entrée</button>
                 </form>
             </div>
 
@@ -84,24 +81,25 @@
             <div id="step-sortie" class="step hidden">
                 <h3 class="mb-3">Enregistrer votre Départ</h3>
                 <form id="form-sortie" autocomplete="off" onsubmit="soumettreSortie(event)">
-                    <div class="mb-3 text-start">
-                        <label for="badge-lettre" class="form-label">Entrez la lettre | code de votre badge </label>
+                    <div class="form-group text-start">
+                        <label for="badge-lettre" class="form-label">Entrez la lettre | code de votre badge</label>
                         <input type="text" id="badge-lettre" class="form-control form-control-lg text-center text-uppercase" placeholder="Ex: A1" autocomplete="off" required>
                     </div>
-                    <button type="submit" class="btn btn-warning w-100 btn-lg">Restituer le badge & Sortir</button>
+                    <button type="submit" class="btn btn-warning btn-lg">Restituer le badge & Sortir</button>
                 </form>
             </div>
 
             <!-- ETAPE 6: CONFIRMATION -->
             <div id="step-confirmation" class="step hidden">
-                <div class="alert alert-success py-4">
-                    <h4 class="alert-heading" id="conf-titre">Opération réussie !</h4>
+                <div class="badge-alert text-center">
+                    <h4 id="conf-titre">Opération réussie !</h4>
                     <p id="conf-message" class="mb-0">Merci d'avoir utilisé MOPAYA.</p>
                 </div>
-                <button class="btn btn-outline-secondary w-100 mt-3" onclick="reinitialiser()">Retour à l'accueil</button>
+                <button class="btn btn-secondary mt-3" onclick="reinitialiser()">Retour à l'accueil</button>
             </div>
 
         </div>
     </div>
+
 </body>
 </html>
