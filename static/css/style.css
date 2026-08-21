@@ -50,6 +50,7 @@ body {
 .mb-4 {
     margin-bottom: 1.5rem !important;
     text-align: center;
+    
 }
 
 .btn-group {
@@ -74,11 +75,19 @@ body {
 .btn:active {
     transform: scale(0.98);
 }
+.btn:hover {
+    opacity: 0.9;
+    }
 
 .btn-primary { background-color: #077d13; color: white; }
 .btn-secondary { background-color: #6c757d; color: white; }
+
+.btn-admin { background-color: #077d13; color: white; }
+
 .btn-success { background-color: #077d13; color: white; }
 .btn-warning { background-color: #9f2807; color: #000; }
+
+
 
 .form-group {
     margin: 20px 0;

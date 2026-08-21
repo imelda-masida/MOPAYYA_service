@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="/static/js/app.js" defer></script>
-    <title>Borne MOPAYA</title>
+    <title>MOPAYA</title>
 </head>
 
 <body class="bg-light">
 
     
     <header class="mb-4">
-        <a href="/admin/login" class="btn btn-success gap-1">Espace Admin</a>
+        <a href="/admin/login" class="btn btn-admin gap-1" style="text-decoration: none;">Espace Admin</a>
     </header>
 
     <div class="container">
@@ -49,7 +49,7 @@
                 <button class="btn btn-primary w-100" onclick="validerHote()">Suivant</button>
             </div>
 
-            <!-- ETAPE 4: FORMULAIRE ENTRÉE -->
+        
             <div id="step-form" class="step hidden">
                 <h3 class="mb-3">Vos Informations</h3>
                 <form id="form-visiteur" autocomplete="off" onsubmit="soumettreEntree(event)">
