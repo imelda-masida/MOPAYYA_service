@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "nom": "Jean Dupont",
+        "service": "Informatique"
+    },
+    {
+        "id": 2,
+        "nom": "Sarah Kabangu",
+        "service": "Ressources Humaines"
+    },
+    {
+        "id": 3,
+        "nom": "Marc Kabora",
+        "service": "Comptabilité"
+    }
+]

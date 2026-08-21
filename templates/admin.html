@@ -6,15 +6,60 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="/static/js/admin.js" defer></script>
     <title>Tableau de Bord Administration - MOPAYA</title>
+
+    <!-- PERSONNALISATION DES COULEURS MOPAYA -->
+    <style>
+        :root {
+            --mopaya-green: #077d13;
+            --mopaya-red: #9b1414;
+        }
+
+        /* Barre de navigation */
+        .bg-primary {
+            background-color: var(--mopaya-green) !important;
+        }
+
+        /* Textes & Titres */
+        .text-primary {
+            color: var(--mopaya-green) !important;
+        }
+
+        /* Boutons principaux */
+        .btn-success {
+            background-color: var(--mopaya-green) !important;
+            border-color: var(--mopaya-green) !important;
+        }
+        .btn-success:hover {
+            background-color: #055c0e !important;
+            border-color: #055c0e !important;
+        }
+
+        /* Boutons de danger / déconnexion */
+        .btn-danger {
+            background-color: var(--mopaya-red) !important;
+            border-color: var(--mopaya-red) !important;
+        }
+
+        /* Champs de formulaire au focus */
+        .form-control:focus, .form-select:focus {
+            border-color: var(--mopaya-green) !important;
+            box-shadow: 0 0 0 0.25rem rgba(7, 125, 19, 0.25) !important;
+        }
+
+        /* En-tête du tableau */
+        .table-light {
+            background-color: #e8f5e9 !important;
+        }
+    </style>
 </head>
 <body class="bg-light">
     
+    <!-- BARRE DE NAVIGATION -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="#">MOPAYA - Administration</a>
             <div class="d-flex gap-2">
-                
-                <a href="/" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1">Voir la Borne</a>
+                <a href="/" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1">Accueil</a>
                 <a href="/admin/logout" class="btn btn-danger btn-sm">Déconnexion</a>
             </div>
         </div>
@@ -22,6 +67,7 @@
 
     <div class="container-fluid px-4">
         
+        <!-- CARTES DES STATISTIQUES -->
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <div class="card bg-white border-0 shadow-sm p-3">
@@ -43,6 +89,24 @@
             </div>
         </div>
 
+        <!-- FORMULAIRE : AJOUTER UN MEMBRE / HÔTE -->
+        <div class="card border-0 shadow-sm mb-4 p-4">
+            <h5 class="fw-bold mb-3 text-dark">Ajouter un nouveau membre</h5>
+            <form action="/admin/membres/ajouter" method="POST" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="nom_membre" class="form-label text-muted fw-semibold">Nom complet</label>
+                    <input type="text" id="nom_membre" name="nom" class="form-control" placeholder="Ex: Marc Kabora" required>
+                </div>
+                <div class="col-md-5">
+                    <label for="service_membre" class="form-label text-muted fw-semibold">Département / Service</label>
+                    <input type="text" id="service_membre" name="service" class="form-control" placeholder="Ex: Comptabilité" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success w-100 fw-semibold">Ajouter</button>
+                </div>
+            </form>
+        </div>
+
         <!-- ZONE DE FILTRES ET TÉLÉCHARGEMENT DE RAPPORTS -->
         <div class="card border-0 shadow-sm mb-4 p-3">
             <div class="row g-3 align-items-center">
@@ -62,7 +126,7 @@
         </div>
 
         <!-- TABLEAU DES VISITES -->
-        <div class="card border-0 shadow-sm p-3">
+        <div class="card border-0 shadow-sm p-3 mb-4">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
@@ -83,6 +147,7 @@
                 </table>
             </div>
         </div>
+
     </div>
 </body>
 </html>

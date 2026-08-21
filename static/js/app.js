@@ -4,7 +4,6 @@ let sessionData = {
     hote_id: null
 };
 
-
 const traductions = {
     fr: {
         titleAction: "Que souhaitez-vous faire ?",
@@ -60,7 +59,8 @@ const traductions = {
     }
 };
 
-// Application de la traduction 
+// --- APPLICATION DE LA TRADUCTION ---
+
 function appliquerTraduction() {
     const lang = sessionData.langue || 'fr';
     const t = traductions[lang];
@@ -79,7 +79,7 @@ function appliquerTraduction() {
     const btnSuivantHote = document.querySelector("#step-hote button");
     if (btnSuivantHote) btnSuivantHote.textContent = t.btnSuivant;
 
-    //Formulaire Entrée
+    // Formulaire Entrée
     const titleForm = document.querySelector("#step-form h3");
     if (titleForm) titleForm.textContent = t.titleForm;
     const labelsForm = document.querySelectorAll("#step-form .form-label");
@@ -98,7 +98,7 @@ function appliquerTraduction() {
     const btnSubmitEntree = document.querySelector("#form-visiteur button[type='submit']");
     if (btnSubmitEntree) btnSubmitEntree.textContent = t.btnValiderEntree;
 
-    //Formulaire Sortie
+    // Formulaire Sortie
     const titleSortie = document.querySelector("#step-sortie h3");
     if (titleSortie) titleSortie.textContent = t.titleSortie;
     const lblBadge = document.querySelector("#step-sortie .form-label");
@@ -106,15 +106,12 @@ function appliquerTraduction() {
     const btnSubmitSortie = document.querySelector("#form-sortie button[type='submit']");
     if (btnSubmitSortie) btnSubmitSortie.textContent = t.btnValiderSortie;
 
-    //Confirmation
+    // Confirmation
     const btnRetour = document.querySelector("#step-confirmation button");
     if (btnRetour) btnRetour.textContent = t.btnRetour;
 }
 
-
-
-// GESTION DE LA NAVIGATION ENTRE ÉTAPES
-
+// --- GESTION DE LA NAVIGATION BETWEEN STEPS ---
 
 function afficherEtape(stepId) {
     const steps = document.querySelectorAll('.step');
@@ -133,33 +130,26 @@ function reinitialiser() {
         hote_id: null
     };
 
-    // Réinitialisation des formulaires HTML
     const formVisiteur = document.getElementById('form-visiteur');
     if (formVisiteur) formVisiteur.reset();
 
     const formSortie = document.getElementById('form-sortie');
     if (formSortie) formSortie.reset();
 
-    // Réinitialisation de la liste déroulante des hôtes
     const selectHote = document.getElementById('select-hote');
     if (selectHote) selectHote.value = '';
 
     afficherEtape('step-lang');
 }
 
+// --- FLUX D'ACCUEIL ---
 
-
-// FLUX D'ACCUEIL
-
-
-//Choix de la langue
 function choisirLangue(lang) {
     sessionData.langue = lang;
     appliquerTraduction();
     afficherEtape('step-action');
 }
 
-// Choix de l'action 
 function choisirAction(action) {
     sessionData.action = action;
 
@@ -171,7 +161,6 @@ function choisirAction(action) {
     }
 }
 
-// Validation de l'hôte sélectionné -> Va directement au formulaire
 function validerHote() {
     const select = document.getElementById('select-hote');
     if (!select || !select.value) {
@@ -183,12 +172,9 @@ function validerHote() {
     afficherEtape('step-form');
 }
 
+// --- REQUÊTES API (FETCH) ---
 
-
-// REQUÊTES API (FETCH)
-
-
-// Charger la liste des membres depuis /api/membres
+// Charge les membres depuis Flask /api/membres
 async function chargerMembres() {
     const select = document.getElementById('select-hote');
     if (!select) return;
@@ -206,7 +192,8 @@ async function chargerMembres() {
         membres.forEach(membre => {
             const option = document.createElement('option');
             option.value = membre.id;
-            option.textContent = `${membre.nom_complet} (${membre.departement_nom || 'Général'})`;
+            // Correspondance exacte avec les champs 'nom' et 'service' du backend Flask
+            option.textContent = `${membre.nom} (${membre.service || 'Général'})`;
             select.appendChild(option);
         });
     } catch (erreur) {
@@ -215,7 +202,7 @@ async function chargerMembres() {
     }
 }
 
-// Soumission du formulaire d'ENTRÉE
+// Soumission de l'entrée
 async function soumettreEntree(event) {
     event.preventDefault();
     const t = traductions[sessionData.langue || 'fr'];
@@ -243,9 +230,7 @@ async function soumettreEntree(event) {
             document.getElementById('conf-titre').textContent = t.confEntreeTitre;
             document.getElementById('conf-message').textContent = result.message || t.confEntreeMsg;
             
-            // Vidage des champs pour la personne suivante
             document.getElementById('form-visiteur').reset();
-            
             afficherEtape('step-confirmation');
         } else {
             alert(result.erreur || "Erreur de traitement.");
@@ -256,7 +241,7 @@ async function soumettreEntree(event) {
     }
 }
 
-// Soumission du formulaire de SORTIE
+// Soumission de la sortie
 async function soumettreSortie(event) {
     event.preventDefault();
     const t = traductions[sessionData.langue || 'fr'];
@@ -276,9 +261,7 @@ async function soumettreSortie(event) {
             document.getElementById('conf-titre').textContent = t.confSortieTitre;
             document.getElementById('conf-message').textContent = result.message || t.confSortieMsg;
             
-            // Vidage du champ de sortie
             document.getElementById('form-sortie').reset();
-
             afficherEtape('step-confirmation');
         } else {
             alert(result.erreur || "Badge introuvable.");
@@ -287,15 +270,16 @@ async function soumettreSortie(event) {
         console.error("Erreur de sortie :", erreur);
         alert("Erreur serveur / Server error.");
     }
+}
 
-    // Réinitialise l'interface après le téléchargement du rapport
-   const btnRapport = document.getElementById('btn-rapport');
-   if (btnRapport) {
-    btnRapport.addEventListener('click', () => {
-        
-        setTimeout(() => {
-            reinitialiser();
-        }, 500);
-    });
-}
-}
+// Écouteur d'événement pour le bouton de rapport
+document.addEventListener('DOMContentLoaded', () => {
+    const btnRapport = document.getElementById('btn-rapport');
+    if (btnRapport) {
+        btnRapport.addEventListener('click', () => {
+            setTimeout(() => {
+                reinitialiser();
+            }, 500);
+        });
+    }
+});
