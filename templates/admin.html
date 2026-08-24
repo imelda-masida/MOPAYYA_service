@@ -7,24 +7,24 @@
     <script src="/static/js/admin.js" defer></script>
     <title>Tableau de Bord Administration - MOPAYA</title>
 
-    <!-- PERSONNALISATION DES COULEURS MOPAYA -->
+
     <style>
         :root {
             --mopaya-green: #077d13;
             --mopaya-red: #9b1414;
         }
 
-        /* Barre de navigation */
+        
         .bg-primary {
             background-color: var(--mopaya-green) !important;
         }
 
-        /* Textes & Titres */
+        
         .text-primary {
             color: var(--mopaya-green) !important;
         }
 
-        /* Boutons principaux */
+        
         .btn-success {
             background-color: var(--mopaya-green) !important;
             border-color: var(--mopaya-green) !important;
@@ -34,13 +34,12 @@
             border-color: #055c0e !important;
         }
 
-        /* Boutons de danger / déconnexion */
+        
         .btn-danger {
             background-color: var(--mopaya-red) !important;
             border-color: var(--mopaya-red) !important;
         }
-
-        /* Champs de formulaire au focus */
+        
         .form-control:focus, .form-select:focus {
             border-color: var(--mopaya-green) !important;
             box-shadow: 0 0 0 0.25rem rgba(7, 125, 19, 0.25) !important;
@@ -67,7 +66,7 @@
 
     <div class="container-fluid px-4">
         
-        <!-- CARTES DES STATISTIQUES -->
+        
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <div class="card bg-white border-0 shadow-sm p-3">
@@ -89,7 +88,7 @@
             </div>
         </div>
 
-        <!-- FORMULAIRE : AJOUTER UN MEMBRE / HÔTE -->
+        
         <div class="card border-0 shadow-sm mb-4 p-4">
             <h5 class="fw-bold mb-3 text-dark">Ajouter un nouveau membre</h5>
             <form action="/admin/membres/ajouter" method="POST" class="row g-3 align-items-end">

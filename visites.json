@@ -1,1 +1,14 @@
-[]
+[
+    {
+        "id": 1,
+        "nom_complet": "imelda",
+        "telephone": "1234567890",
+        "fonction": "TIA",
+        "adresse": "LUSHI",
+        "genre": "F",
+        "membre_id": "3",
+        "badge": "N-795",
+        "heure_entree": "2026-08-24 11:46:27",
+        "heure_sortie": "2026-08-24 11:59:32"
+    }
+]

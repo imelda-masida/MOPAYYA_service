@@ -32,6 +32,17 @@ app.secret_key = 'votre_cle_secrete_ici'
 FICHIER_MEMBRES = 'membres.json'
 FICHIER_VISITES = 'visites.json'
 
+# Mappage des services/départements aux lettres de badge
+DEPARTEMENT_PREFIXES = {
+    'Informatique': 'A',
+    'Ressources Humaines': 'B',
+    'Comptabilité': 'C',
+    'Direction': 'D',
+    'Logistique': 'E'
+}
+
+MAX_BADGES_PAR_DEPT = 20
+
 
 # --- GESTION DES FICHIERS JSON ---
 
@@ -75,6 +86,37 @@ def sauvegarder_visites(liste_visites):
         json.dump(liste_visites, f, indent=4, ensure_ascii=False)
 
 
+# --- LOGIQUE D'ATTRIBUTION DES BADGES ---
+
+def generer_badge_pour_service(nom_service):
+    """
+    Génère un badge unique (ex: A1, A2...) pour un service donné.
+    Libère automatiquement le numéro si le visiteur est sorti.
+    """
+    prefixe = DEPARTEMENT_PREFIXES.get(nom_service, 'X')
+    visites = lire_visites()
+
+    # Récupérer les badges actuellement occupés (visiteurs encore sur site) pour ce préfixe
+    badges_occupes = [
+        v.get('badge') for v in visites 
+        if v.get('heure_sortie') is None and v.get('badge', '').startswith(prefixe)
+    ]
+
+    # Extraire les numéros utilisés
+    numeros_occupes = []
+    for b in badges_occupes:
+        num_str = b.replace(prefixe, '')
+        if num_str.isdigit():
+            numeros_occupes.append(int(num_str))
+
+    # Trouver le premier numéro libre de 1 à MAX_BADGES_PAR_DEPT
+    for i in range(1, MAX_BADGES_PAR_DEPT + 1):
+        if i not in numeros_occupes:
+            return f"{prefixe}{i}"
+
+    return None
+
+
 # --- DÉCORATEUR SÉCURITÉ ADMIN ---
 
 def admin_requis(f):
@@ -100,11 +142,26 @@ def get_membres():
 def enregistrer_entree():
     data = request.get_json() or {}
     visites = lire_visites()
-    nouveau_id = max([v.get('id', 0) for v in visites], default=0) + 1
+    membres = lire_membres()
 
-    # Attribuer un badge unique aléatoire (ex: B-302)
-    lettre = random.choice(string.ascii_uppercase)
-    badge = f"{lettre}-{random.randint(100, 999)}"
+    # 1. Identifier le membre/hôte sélectionné et son service
+    membre_id = data.get("membre_id")
+    hôte = next((m for m in membres if str(m.get("id")) == str(membre_id)), None)
+
+    if not hôte:
+        return jsonify({"erreur": "Hôte introuvable."}), 400
+
+    service_hôte = hôte.get("service", "")
+
+    # 2. Attribution séquentielle du badge selon le service (A1 à A20, B1 à B20...)
+    badge = generer_badge_pour_service(service_hôte)
+
+    if not badge:
+        return jsonify({
+            "erreur": f"Tous les badges du service {service_hôte} sont actuellement attribués."
+        }), 400
+
+    nouveau_id = max([v.get('id', 0) for v in visites], default=0) + 1
 
     nouvelle_visite = {
         "id": nouveau_id,
@@ -113,7 +170,7 @@ def enregistrer_entree():
         "fonction": data.get("fonction"),
         "adresse": data.get("adresse"),
         "genre": data.get("genre"),
-        "membre_id": data.get("membre_id"),
+        "membre_id": membre_id,
         "badge": badge,
         "heure_entree": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         "heure_sortie": None

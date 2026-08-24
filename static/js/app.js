@@ -65,7 +65,7 @@ function appliquerTraduction() {
     const lang = sessionData.langue || 'fr';
     const t = traductions[lang];
 
-    // Choix Action
+    
     const txtAction = document.getElementById('txt-action-title');
     if (txtAction) txtAction.textContent = t.titleAction;
     const btnEntree = document.querySelector("#step-action .btn-success");
@@ -73,13 +73,13 @@ function appliquerTraduction() {
     const btnSortie = document.querySelector("#step-action .btn-warning");
     if (btnSortie) btnSortie.textContent = t.btnSortie;
 
-    // Choix Hôte
+    
     const titleHote = document.querySelector("#step-hote h3");
     if (titleHote) titleHote.textContent = t.titleHote;
     const btnSuivantHote = document.querySelector("#step-hote button");
     if (btnSuivantHote) btnSuivantHote.textContent = t.btnSuivant;
 
-    // Formulaire Entrée
+    
     const titleForm = document.querySelector("#step-form h3");
     if (titleForm) titleForm.textContent = t.titleForm;
     const labelsForm = document.querySelectorAll("#step-form .form-label");
@@ -98,7 +98,7 @@ function appliquerTraduction() {
     const btnSubmitEntree = document.querySelector("#form-visiteur button[type='submit']");
     if (btnSubmitEntree) btnSubmitEntree.textContent = t.btnValiderEntree;
 
-    // Formulaire Sortie
+    // Sortie
     const titleSortie = document.querySelector("#step-sortie h3");
     if (titleSortie) titleSortie.textContent = t.titleSortie;
     const lblBadge = document.querySelector("#step-sortie .form-label");
@@ -111,7 +111,7 @@ function appliquerTraduction() {
     if (btnRetour) btnRetour.textContent = t.btnRetour;
 }
 
-// --- GESTION DE LA NAVIGATION BETWEEN STEPS ---
+// navigation
 
 function afficherEtape(stepId) {
     const steps = document.querySelectorAll('.step');
@@ -142,7 +142,7 @@ function reinitialiser() {
     afficherEtape('step-lang');
 }
 
-// --- FLUX D'ACCUEIL ---
+// FLUX D'ACCUEIL
 
 function choisirLangue(lang) {
     sessionData.langue = lang;
@@ -172,7 +172,7 @@ function validerHote() {
     afficherEtape('step-form');
 }
 
-// --- REQUÊTES API (FETCH) ---
+//REQUÊTES API (FETCH) 
 
 // Charge les membres depuis Flask /api/membres
 async function chargerMembres() {
