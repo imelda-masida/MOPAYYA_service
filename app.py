@@ -34,7 +34,7 @@ FICHIER_VISITES = 'visites.json'
 
 # Mappage des services/départements aux lettres de badge
 DEPARTEMENT_PREFIXES = {
-    'Informatique': 'A',
+    'IT': 'A',
     'Ressources Humaines': 'B',
     'Comptabilité': 'C',
     'Direction': 'D',
