@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chargerHotesFiltre();
     chargerVisites();
 
-    // Écouteurs pour le filtrage dynamique en direct
+    
     const inputRecherche = document.getElementById('filtre-recherche');
     const selectHote = document.getElementById('filtre-hote');
 
