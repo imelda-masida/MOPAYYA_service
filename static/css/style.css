@@ -12,13 +12,38 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/static/image/bg.jpeg');
+    background-color: #051059; /* Fond bleu nuit uniforme */
+    position: relative;
+    overflow: hidden;
+}
+
+/* LOGO BLANC EN ARRIÈRE-PLAN AVEC FOND BLEU ASSURÉ */
+body::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    max-width: 600px;
+    height: 80vh;
+    max-height: 600px;
+    
+    
     background-repeat: no-repeat;
     background-position: center center;
-    background-size: cover;
+    background-size: contain;
+    
+    /* Rend l'Afrique et les textes 100% BLANCS */
+    filter: brightness(0) invert(1);
+    opacity: 0.15; /* Opacité légère pour que le formulaire reste très lisible */
+    pointer-events: none;
+    z-index: 0;
 }
 
 .container {
+    position: relative;
+    z-index: 1;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -27,24 +52,23 @@ body {
 }
 
 .kiosk-card {
-    
     width: 100%;
     max-width: 480px;
     padding: 35px 30px;
     border-radius: 16px;
-    /*box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);*/
+    background-color: rgba(255, 255, 255, 0.95); /* Carte légèrement opaque pour mieux voir */
     text-align: center;
-
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .brand-title {
     font-size: 2.2rem;
-    color: #077d13;
+    color: #051059;
     margin-bottom: 5px;
 }
 
 .subtitle {
-    color: black;
+    color: #333;
     font-size: 0.95rem;
     margin-bottom: 20px;
 }
@@ -60,14 +84,12 @@ body {
 .text-start { text-align: left; }
 .text-uppercase { text-transform: uppercase; }
 
-
 .btn-group {
     display: flex;
     flex-direction: column;
     gap: 12px;
     width: 100%;
 }
-
 
 .btn {
     width: 100%;
@@ -92,65 +114,61 @@ body {
     opacity: 0.92;
 }
 
-
-.btn-primary{ 
-    background-color: #054e0c; 
+.btn-primary { 
+    background-color: #051059; 
     color: white; 
     margin-top: 30px;
 }
 
 .btn-primary:hover { 
     background-color: white; 
-    color: black; 
+    color: #051059; 
+    border-color: #051059;
 }
 
-.btn-outline-primary{ 
-    background-color: #054e0c; 
+.btn-outline-primary { 
+    background-color: #051059; 
     color: white; 
     margin-top: 10px;
 }
 
 .btn-outline-primary:hover { 
     background-color: white; 
-    color: black; 
+    color: #051059; 
+    border-color: #051059;
 }
 
 .btn-secondary { 
-    background-color: #054e0c; 
+    background-color: #051059; 
     color: white; 
 }
 
-
 .btn-admin { 
     border-radius: 20px;
-
-    margin-top: 200px;
-    width: 50%;
-    
-    
+    margin-top: 30px;
+    width: 100%;
     font-weight: 600; 
     display: flex;
-    justify-content: right;
-    
+    justify-content: center;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
+    color: #051059;
 }
 
 .btn-admin:hover { 
-    color: black; 
+    color: #000000; 
 }
 
 .btn-entre { 
-    background-color: #054e0c; 
+    background-color: #051059; 
     color: white; 
 }
 
 .btn-sortie { 
-    background-color: rgb(104, 7, 7); 
+    background-color: #8b0000; 
     color: white; 
 }
-
 
 .form-group {
     margin-bottom: 15px;
@@ -175,16 +193,15 @@ body {
 }
 
 .form-control:focus {
-    border-color: #077d13;
-    box-shadow: 0 0 0 3px rgba(7, 125, 19, 0.2);
+    border-color: #051059;
+    box-shadow: 0 0 0 3px rgba(5, 16, 89, 0.2);
 }
 
-
 .badge-alert {
-    background-color: #e8f5e9;
-    border-left: 5px solid #077d13;
+    background-color: #e8eaf6;
+    border-left: 5px solid #051059;
     padding: 20px;
     border-radius: 8px;
     margin: 15px 0;
-    color: #1b5e20;
+    color: #051059;
 }
