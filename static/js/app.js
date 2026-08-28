@@ -59,7 +59,7 @@ const traductions = {
     }
 };
 
-// --- APPLICATION DE LA TRADUCTION ---
+
 
 function appliquerTraduction() {
     const lang = sessionData.langue || 'fr';
@@ -68,9 +68,9 @@ function appliquerTraduction() {
     
     const txtAction = document.getElementById('txt-action-title');
     if (txtAction) txtAction.textContent = t.titleAction;
-    const btnEntree = document.querySelector("#step-action .btn-success");
+    const btnEntree = document.querySelector("#step-action .btn-entre");
     if (btnEntree) btnEntree.textContent = t.btnEntree;
-    const btnSortie = document.querySelector("#step-action .btn-warning");
+    const btnSortie = document.querySelector("#step-action .btn-sortie");
     if (btnSortie) btnSortie.textContent = t.btnSortie;
 
     
@@ -142,7 +142,7 @@ function reinitialiser() {
     afficherEtape('step-lang');
 }
 
-// FLUX D'ACCUEIL
+
 
 function choisirLangue(lang) {
     sessionData.langue = lang;
@@ -192,7 +192,8 @@ async function chargerMembres() {
         membres.forEach(membre => {
             const option = document.createElement('option');
             option.value = membre.id;
-            // Correspondance exacte avec les champs 'nom' et 'service' du backend Flask
+            
+
             option.textContent = `${membre.nom} (${membre.service || 'Général'})`;
             select.appendChild(option);
         });
@@ -202,7 +203,7 @@ async function chargerMembres() {
     }
 }
 
-// Soumission de l'entrée
+
 async function soumettreEntree(event) {
     event.preventDefault();
     const t = traductions[sessionData.langue || 'fr'];
@@ -241,7 +242,7 @@ async function soumettreEntree(event) {
     }
 }
 
-// Soumission de la sortie
+
 async function soumettreSortie(event) {
     event.preventDefault();
     const t = traductions[sessionData.langue || 'fr'];

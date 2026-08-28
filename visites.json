@@ -22,5 +22,29 @@
         "badge": "C1",
         "heure_entree": "2026-08-24 12:46:00",
         "heure_sortie": "2026-08-24 12:46:48"
+    },
+    {
+        "id": 3,
+        "nom_complet": "aser",
+        "telephone": "0890998776",
+        "fonction": "it",
+        "adresse": "lubumbashi",
+        "genre": "M",
+        "membre_id": "1",
+        "badge": "X1",
+        "heure_entree": "2026-08-25 12:39:31",
+        "heure_sortie": "2026-08-25 12:39:46"
+    },
+    {
+        "id": 4,
+        "nom_complet": "MARCUS",
+        "telephone": "0999897877",
+        "fonction": "consultant",
+        "adresse": "LUBUMBASHI",
+        "genre": "M",
+        "membre_id": "1",
+        "badge": "X1",
+        "heure_entree": "2026-08-28 08:07:55",
+        "heure_sortie": "2026-08-28 08:08:30"
     }
 ]
