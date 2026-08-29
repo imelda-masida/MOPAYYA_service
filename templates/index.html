@@ -11,14 +11,15 @@
 <body class="bg-light">
 
     <div class="container">
+        <div class="logo-wrapper">
+            <img src="https://group-tia.com/wp-content/uploads/2024/04/logo-GROUP-tia-inverse.png" alt="Logo Group TIA" class="floating-logo">
+        </div>
         
         <div class="kiosk-card text-center">
-             <div class="logo-wrapper">
-              <img src="https://group-tia.com/wp-content/uploads/2024/04/logo-GROUP-tia-inverse.png" alt="Logo Group TIA" class="floating-logo">
-            </div>
+             
             <h1 class="brand-title">MOPAYA</h1>
     
-            
+            <!-- Étape 1 : Langue -->
             <div id="step-lang" class="step">
                 <h1 class="mb-4">Bienvenue | Welcome</h1>
                 <p class="subtitle mb-4"><strong>Veuillez choisir votre langue | Please select your language</strong></p>
@@ -26,20 +27,22 @@
                 <div class="btn-group">
                     <button class="btn btn-primary btn-lg" onclick="choisirLangue('fr')">Français</button>
                     <button class="btn btn-outline-primary btn-lg" onclick="choisirLangue('en')">English</button>
-                    <a href="/admin/login" class="btn-admin">.</a>
+                    <a href="/admin/login" class="btn-admin">-</a>
                 </div>
             </div>
 
-        
+            <!-- Étape 2 : Action -->
             <div id="step-action" class="step hidden">
                 <h2 class="mb-4" id="txt-action-title">Que souhaitez-vous faire ?</h2>
                 <div class="btn-group">
                     <button class="btn btn-entre btn-lg" onclick="choisirAction('entree')">Enregistrer une Entrée</button>
                     <button class="btn btn-sortie btn-lg" onclick="choisirAction('sortie')">Enregistrer une Sortie</button>
                 </div>
+                <!-- Lien retour comme le bouton admin -->
+                <a href="javascript:void(0)" class="btn-admin btn-back-link" onclick="etapePrecedente()">&#8592; Retour</a>
             </div>
 
-            
+            <!-- Étape 3 : Sélection Hôte -->
             <div id="step-hote" class="step hidden">
                 <h3 class="mb-3">Qui venez-vous visiter ?</h3>
                 <div class="form-group">
@@ -48,9 +51,12 @@
                     </select>
                 </div>
                 <button class="btn btn-primary" onclick="validerHote()">Suivant</button>
+                
+                <!-- Lien retour -->
+                <a href="javascript:void(0)" class="btn-admin btn-back-link" onclick="etapePrecedente()">&#8592; Retour</a>
             </div>
 
-            
+            <!-- Étape 4 : Formulaire Entrée -->
             <div id="step-form" class="step hidden">
                 <h3 class="mb-3">Vos Informations</h3>
                 <form id="form-visiteur" autocomplete="off" onsubmit="soumettreEntree(event)">
@@ -79,9 +85,12 @@
                     </div>
                     <button type="submit" class="btn btn-primary btn-lg">Valider l'Entrée</button>
                 </form>
+                
+                <!-- Lien retour -->
+                <a href="javascript:void(0)" class="btn-admin btn-back-link" onclick="etapePrecedente()">&#8592; Retour</a>
             </div>
 
-            
+            <!-- Étape 5 : Formulaire Sortie -->
             <div id="step-sortie" class="step hidden">
                 <h3 class="mb-3">Enregistrer votre Départ</h3>
                 <form id="form-sortie" autocomplete="off" onsubmit="soumettreSortie(event)">
@@ -91,9 +100,12 @@
                     </div>
                     <button type="submit" class="btn btn-sortie btn-lg">Restituer le badge & Sortir</button>
                 </form>
+                
+                <!-- Lien retour -->
+                <a href="javascript:void(0)" class="btn-admin btn-back-link" onclick="etapePrecedente()">&#8592; Retour</a>
             </div>
 
-            
+            <!-- Étape 6 : Confirmation -->
             <div id="step-confirmation" class="step hidden">
                 <div class="badge-alert text-center">
                     <h4 id="conf-titre">Opération réussie !</h4>

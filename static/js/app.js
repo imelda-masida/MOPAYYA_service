@@ -4,6 +4,9 @@ let sessionData = {
     hote_id: null
 };
 
+// Historique pour gérer le bouton Retour
+let historiqueEtapes = ['step-lang'];
+
 const traductions = {
     fr: {
         titleAction: "Que souhaitez-vous faire ?",
@@ -29,7 +32,8 @@ const traductions = {
         confEntreeMsg: "Bienvenue ! Votre badge vous a été attribué.",
         confSortieTitre: "Sortie enregistrée !",
         confSortieMsg: "Merci de votre visite et à bientôt !",
-        btnRetour: "Retour à l'accueil"
+        btnRetourAccueil: "Retour à l'accueil",
+        btnRetour: "← Retour"
     },
     en: {
         titleAction: "What would you like to do?",
@@ -55,17 +59,21 @@ const traductions = {
         confEntreeMsg: "Welcome! Your badge has been assigned.",
         confSortieTitre: "Check Out Recorded!",
         confSortieMsg: "Thank you for your visit and see you soon!",
-        btnRetour: "Back to Home"
+        btnRetourAccueil: "Back to Home",
+        btnRetour: "← Back"
     }
 };
-
-
 
 function appliquerTraduction() {
     const lang = sessionData.langue || 'fr';
     const t = traductions[lang];
 
-    
+    // Traduction des liens/boutons de retour
+    document.querySelectorAll('.btn-back-link').forEach(btn => {
+        btn.textContent = t.btnRetour;
+    });
+
+    // Action
     const txtAction = document.getElementById('txt-action-title');
     if (txtAction) txtAction.textContent = t.titleAction;
     const btnEntree = document.querySelector("#step-action .btn-entre");
@@ -73,13 +81,13 @@ function appliquerTraduction() {
     const btnSortie = document.querySelector("#step-action .btn-sortie");
     if (btnSortie) btnSortie.textContent = t.btnSortie;
 
-    
+    // Hôte
     const titleHote = document.querySelector("#step-hote h3");
     if (titleHote) titleHote.textContent = t.titleHote;
     const btnSuivantHote = document.querySelector("#step-hote button");
     if (btnSuivantHote) btnSuivantHote.textContent = t.btnSuivant;
 
-    
+    // Formulaire
     const titleForm = document.querySelector("#step-form h3");
     if (titleForm) titleForm.textContent = t.titleForm;
     const labelsForm = document.querySelectorAll("#step-form .form-label");
@@ -108,18 +116,36 @@ function appliquerTraduction() {
 
     // Confirmation
     const btnRetour = document.querySelector("#step-confirmation button");
-    if (btnRetour) btnRetour.textContent = t.btnRetour;
+    if (btnRetour) btnRetour.textContent = t.btnRetourAccueil;
 }
 
-// navigation
+// NAVIGATION & HISTORIQUE
 
-function afficherEtape(stepId) {
+function afficherEtape(stepId, estUnRetour = false) {
     const steps = document.querySelectorAll('.step');
     steps.forEach(step => step.classList.add('hidden'));
 
     const targetStep = document.getElementById(stepId);
     if (targetStep) {
         targetStep.classList.remove('hidden');
+    }
+
+    // Enregistre l'étape dans l'historique si ce n'est pas une marche arrière
+    if (!estUnRetour) {
+        historiqueEtapes.push(stepId);
+    }
+}
+
+function etapePrecedente() {
+    if (historiqueEtapes.length > 1) {
+        // Supprime l'étape actuelle
+        historiqueEtapes.pop();
+        
+        // Récupère l'étape précédente
+        const etapePrecedenteId = historiqueEtapes[historiqueEtapes.length - 1];
+        
+        // Affiche l'étape précédente sans réenregistrer dans la pile
+        afficherEtape(etapePrecedenteId, true);
     }
 }
 
@@ -130,6 +156,8 @@ function reinitialiser() {
         hote_id: null
     };
 
+    historiqueEtapes = ['step-lang'];
+
     const formVisiteur = document.getElementById('form-visiteur');
     if (formVisiteur) formVisiteur.reset();
 
@@ -139,10 +167,8 @@ function reinitialiser() {
     const selectHote = document.getElementById('select-hote');
     if (selectHote) selectHote.value = '';
 
-    afficherEtape('step-lang');
+    afficherEtape('step-lang', true);
 }
-
-
 
 function choisirLangue(lang) {
     sessionData.langue = lang;
@@ -172,9 +198,8 @@ function validerHote() {
     afficherEtape('step-form');
 }
 
-//REQUÊTES API (FETCH) 
+// REQUÊTES API (FETCH)
 
-// Charge les membres depuis Flask /api/membres
 async function chargerMembres() {
     const select = document.getElementById('select-hote');
     if (!select) return;
@@ -192,8 +217,6 @@ async function chargerMembres() {
         membres.forEach(membre => {
             const option = document.createElement('option');
             option.value = membre.id;
-            
-
             option.textContent = `${membre.nom} (${membre.service || 'Général'})`;
             select.appendChild(option);
         });
@@ -202,7 +225,6 @@ async function chargerMembres() {
         select.innerHTML = '<option value="" selected disabled>Erreur / Error</option>';
     }
 }
-
 
 async function soumettreEntree(event) {
     event.preventDefault();
@@ -242,7 +264,6 @@ async function soumettreEntree(event) {
     }
 }
 
-
 async function soumettreSortie(event) {
     event.preventDefault();
     const t = traductions[sessionData.langue || 'fr'];
@@ -273,7 +294,6 @@ async function soumettreSortie(event) {
     }
 }
 
-// Écouteur d'événement pour le bouton de rapport
 document.addEventListener('DOMContentLoaded', () => {
     const btnRapport = document.getElementById('btn-rapport');
     if (btnRapport) {
