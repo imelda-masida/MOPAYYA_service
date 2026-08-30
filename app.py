@@ -2,8 +2,6 @@ import csv
 import io
 import json
 import os
-import random
-import string
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -18,11 +16,15 @@ from flask import (
     url_for,
 )
 
+# Traitement d'image et requêtes réseau pour le logo PDF
+import requests
+from PIL import Image as PILImage
+
 # Imports pour la génération PDF (ReportLab)
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import Image as RLImage, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 # --- CONFIGURATION INITIALE ---
 
@@ -42,6 +44,17 @@ DEPARTEMENT_PREFIXES = {
 }
 
 MAX_BADGES_PAR_DEPT = 20
+
+
+# --- DÉCORATEUR SÉCURITÉ ADMIN (Doit être défini avant d'être utilisé) ---
+
+def admin_requis(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('admin_connecte'):
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # --- GESTION DES FICHIERS JSON ---
@@ -86,49 +99,53 @@ def sauvegarder_visites(liste_visites):
         json.dump(liste_visites, f, indent=4, ensure_ascii=False)
 
 
-# --- LOGIQUE D'ATTRIBUTION DES BADGES ---
+# --- LOGIQUE D'ATTRIBUTION DES BADGES & TRAITEMENT D'IMAGE ---
 
 def generer_badge_pour_service(nom_service):
-    """
-    Génère un badge unique (ex: A1, A2...) pour un service donné.
-    Libère automatiquement le numéro si le visiteur est sorti.
-    """
+    """Génère un badge unique (ex: A1, A2...) pour un service donné."""
     prefixe = DEPARTEMENT_PREFIXES.get(nom_service, 'X')
     visites = lire_visites()
 
-    # Récupérer les badges actuellement occupés (visiteurs encore sur site) pour ce préfixe
     badges_occupes = [
         v.get('badge') for v in visites 
         if v.get('heure_sortie') is None and v.get('badge', '').startswith(prefixe)
     ]
 
-    # Extraire les numéros utilisés
     numeros_occupes = []
     for b in badges_occupes:
         num_str = b.replace(prefixe, '')
         if num_str.isdigit():
             numeros_occupes.append(int(num_str))
 
-    # Trouver le premier numéro libre de 1 à MAX_BADGES_PAR_DEPT
     for i in range(1, MAX_BADGES_PAR_DEPT + 1):
         if i not in numeros_occupes:
             return f"{prefixe}{i}"
 
     return None
 
+def obtenir_logo_bleu_buffer(url_logo, couleur_hex="#051059"):
+    """Télécharge l'image PNG distante et la recolore en bleu."""
+    try:
+        response = requests.get(url_logo, timeout=5)
+        if response.status_code == 200:
+            img = PILImage.open(io.BytesIO(response.content)).convert("RGBA")
+            hex_val = couleur_hex.lstrip('#')
+            target_rgb = tuple(int(hex_val[i:i+2], 16) for i in (0, 2, 4))
+            
+            _, _, _, alpha = img.split()
+            nouvelle_img = PILImage.new("RGBA", img.size, target_rgb + (255,))
+            nouvelle_img.putalpha(alpha)
+            
+            buffer_img = io.BytesIO()
+            nouvelle_img.save(buffer_img, format="PNG")
+            buffer_img.seek(0)
+            return buffer_img
+    except Exception as e:
+        print(f"Erreur de traitement du logo : {e}")
+    return None
 
-# --- DÉCORATEUR SÉCURITÉ ADMIN ---
 
-def admin_requis(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get('admin_connecte'):
-            return redirect(url_for('admin_login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-# --- ROUTES PUBLIQUES (BORNE INTERACTIVE) ---
+# --- ROUTES PUBLIQUES ---
 
 @app.route('/')
 def home():
@@ -144,7 +161,6 @@ def enregistrer_entree():
     visites = lire_visites()
     membres = lire_membres()
 
-    # 1. Identifier le membre/hôte sélectionné et son service
     membre_id = data.get("membre_id")
     hôte = next((m for m in membres if str(m.get("id")) == str(membre_id)), None)
 
@@ -152,8 +168,6 @@ def enregistrer_entree():
         return jsonify({"erreur": "Hôte introuvable."}), 400
 
     service_hôte = hôte.get("service", "")
-
-    # 2. Attribution séquentielle du badge selon le service (A1 à A20, B1 à B20...)
     badge = generer_badge_pour_service(service_hôte)
 
     if not badge:
@@ -248,6 +262,18 @@ def ajouter_membre():
         sauvegarder_membres(membres)
 
     return redirect(url_for('admin_dashboard'))
+
+@app.route('/api/admin/membres/supprimer/<int:membre_id>', methods=['DELETE'])
+@admin_requis
+def supprimer_membre(membre_id):
+    membres = lire_membres()
+    membres_filtrés = [m for m in membres if str(m.get('id')) != str(membre_id)]
+
+    if len(membres_filtrés) == len(membres):
+        return jsonify({"erreur": "Membre non trouvé."}), 404
+
+    sauvegarder_membres(membres_filtrés)
+    return jsonify({"message": "Membre supprimé avec succès."}), 200
 
 
 # --- ROUTES API ADMINISTRATEUR ---
@@ -346,7 +372,6 @@ def exporter_rapport():
             except ValueError:
                 continue
 
-    # Exportation CSV
     if fmt == 'csv':
         output = io.StringIO()
         writer = csv.writer(output, delimiter=';')
@@ -370,19 +395,28 @@ def exporter_rapport():
         response.headers["Content-type"] = "text/csv; charset=utf-8"
         return response
 
-    # Exportation PDF
     elif fmt == 'pdf':
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
         elements = []
+
+        # En-tête : Logo en bleu
+        url_logo = "https://group-tia.com/wp-content/uploads/2024/04/logo-GROUP-tia-inverse.png"
+        logo_buffer = obtenir_logo_bleu_buffer(url_logo, couleur_hex="#051059")
+
+        if logo_buffer:
+            img_logo = RLImage(logo_buffer, width=140, height=45)
+            img_logo.hAlign = 'LEFT'
+            elements.append(img_logo)
+            elements.append(Spacer(1, 10))
 
         styles = getSampleStyleSheet()
         titre_style = ParagraphStyle(
             'TitreStyle',
             parent=styles['Heading1'],
             fontSize=16,
-            textColor=colors.HexColor("#0d6efd"),
-            spaceAfter=12
+            textColor=colors.HexColor("#051059"),
+            spaceAfter=6
         )
 
         elements.append(Paragraph("MOPAYA - Rapport Hebdomadaire des Visites", titre_style))
@@ -404,7 +438,7 @@ def exporter_rapport():
 
         t = Table(data, colWidths=[110, 80, 110, 60, 80, 80])
         t.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0d6efd")),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#051059")),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -428,7 +462,7 @@ def exporter_rapport():
     return jsonify({"erreur": "Format non supporté"}), 400
 
 
-# --- LANCEMENT DU SERVEUR ---
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

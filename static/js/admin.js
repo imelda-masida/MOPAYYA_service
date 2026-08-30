@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     chargerStats();
+    chargerMembresGestion();
     chargerHotesFiltre();
     chargerVisites();
 
-    
     const inputRecherche = document.getElementById('filtre-recherche');
     const selectHote = document.getElementById('filtre-hote');
 
@@ -26,7 +26,67 @@ async function chargerStats() {
     }
 }
 
-// Remplir le filtre des hôtes depuis /api/membres
+// Charger la liste des membres dans le tableau de gestion + bouton suppression
+async function chargerMembresGestion() {
+    const tbody = document.getElementById('table-membres-body');
+    if (!tbody) return;
+
+    try {
+        const res = await fetch('/api/membres');
+        if (res.ok) {
+            const membres = await res.json();
+            tbody.innerHTML = '';
+
+            if (membres.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Aucun membre enregistré.</td></tr>';
+                return;
+            }
+
+            membres.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${m.nom}</strong></td>
+                    <td><span class="badge bg-light text-dark border">${m.service || 'Général'}</span></td>
+                    <td class="text-end">
+                        <button class="btn btn-outline-danger btn-sm" onclick="supprimerMembre(${m.id}, '${m.nom.replace(/'/g, "\\'")}')">
+                            Supprimer
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } catch (e) {
+        console.error("Erreur chargement tableau membres:", e);
+    }
+}
+
+// Supprimer un membre
+async function supprimerMembre(id, nom) {
+    if (!confirm(`Voulez-vous vraiment supprimer le membre "${nom}" ?`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/admin/membres/supprimer/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (res.ok) {
+            chargerMembresGestion();
+            chargerHotesFiltre();
+            chargerVisites();
+        } else {
+            const data = await res.json();
+            alert(data.erreur || "Erreur lors de la suppression.");
+        }
+    } catch (e) {
+        console.error("Erreur lors de la suppression du membre:", e);
+        alert("Erreur serveur lors de la suppression.");
+    }
+}
+
+// Remplir le filtre déroulant des hôtes
 async function chargerHotesFiltre() {
     const select = document.getElementById('filtre-hote');
     if (!select) return;
@@ -40,7 +100,6 @@ async function chargerHotesFiltre() {
             membres.forEach(m => {
                 const opt = document.createElement('option');
                 opt.value = m.id;
-                // Utilisation de m.nom (aligné avec app.py / membres.json)
                 opt.textContent = `${m.nom} (${m.service || 'Général'})`;
                 select.appendChild(opt);
             });
@@ -50,7 +109,7 @@ async function chargerHotesFiltre() {
     }
 }
 
-// Charger et filtrer la liste des visites depuis /api/admin/visites
+// Charger et filtrer la liste des visites
 async function chargerVisites() {
     const inputRecherche = document.getElementById('filtre-recherche');
     const selectHote = document.getElementById('filtre-hote');
@@ -80,13 +139,11 @@ async function chargerVisites() {
         visites.forEach(v => {
             const tr = document.createElement('tr');
 
-            // Badge de visiteur récurrent
             let badgeRecurrent = '';
             if (v.total_visites_perso && v.total_visites_perso > 1) {
                 badgeRecurrent = `<span class="badge bg-warning text-dark ms-1" title="Visiteur récurrent">${v.total_visites_perso} visites</span>`;
             }
 
-            // Statut Présent / Parti
             const statut = v.heure_sortie 
                 ? '<span class="badge bg-secondary">Parti</span>' 
                 : '<span class="badge bg-success">Sur site</span>';
