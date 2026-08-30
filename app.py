@@ -46,7 +46,7 @@ DEPARTEMENT_PREFIXES = {
 MAX_BADGES_PAR_DEPT = 20
 
 
-# --- DÉCORATEUR SÉCURITÉ ADMIN (Doit être défini avant d'être utilisé) ---
+# --- DÉCORATEUR SÉCURITÉ ADMIN ---
 
 def admin_requis(f):
     @wraps(f)
@@ -359,7 +359,10 @@ def exporter_rapport():
     visites = lire_visites()
     membres = {str(m['id']): m['nom'] for m in lire_membres()}
 
-    date_limite = datetime.now() - timedelta(days=7)
+    # --- CALCUL DU DÉBUT DE LA SEMAINE ACTUELLE (Lundi 00:00:00) ---
+    maintenant = datetime.now()
+    debut_semaine = maintenant.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=maintenant.weekday())
+
     visites_semaine = []
 
     for v in visites:
@@ -367,7 +370,7 @@ def exporter_rapport():
         if h_entree:
             try:
                 dt_entree = datetime.strptime(h_entree, '%Y-%m-%d %H:%M:%S')
-                if dt_entree >= date_limite:
+                if dt_entree >= debut_semaine:
                     visites_semaine.append(v)
             except ValueError:
                 continue
@@ -462,7 +465,7 @@ def exporter_rapport():
     return jsonify({"erreur": "Format non supporté"}), 400
 
 
-
+# --- LANCEMENT DU SERVEUR ---
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

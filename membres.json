@@ -13,10 +13,5 @@
         "id": 3,
         "nom": "Marc Kabora",
         "service": "Comptabilité"
-    },
-    {
-        "id": 4,
-        "nom": "Jean kadulo",
-        "service": "IT"
     }
 ]
