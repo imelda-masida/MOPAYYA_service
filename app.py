@@ -359,7 +359,7 @@ def exporter_rapport():
     visites = lire_visites()
     membres = {str(m['id']): m['nom'] for m in lire_membres()}
 
-    # --- CALCUL DU DÉBUT DE LA SEMAINE ACTUELLE (Lundi 00:00:00) ---
+    # --- CALCUL DU DÉBUT DE LA SEMAINE ACTUELLE (Lundi 00:00:00) 
     maintenant = datetime.now()
     debut_semaine = maintenant.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=maintenant.weekday())
 
