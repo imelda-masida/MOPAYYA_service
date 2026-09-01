@@ -46,7 +46,7 @@ DEPARTEMENT_PREFIXES = {
 MAX_BADGES_PAR_DEPT = 20
 
 
-# --- DÉCORATEUR SÉCURITÉ ADMIN ---
+# DÉCORATEUR SÉCURITÉ ADMIN 
 
 def admin_requis(f):
     @wraps(f)
@@ -57,7 +57,7 @@ def admin_requis(f):
     return decorated_function
 
 
-# --- GESTION DES FICHIERS JSON ---
+# GESTION DES FICHIERS JSON 
 
 def lire_membres():
     """Lit la liste des membres depuis membres.json."""
@@ -99,7 +99,7 @@ def sauvegarder_visites(liste_visites):
         json.dump(liste_visites, f, indent=4, ensure_ascii=False)
 
 
-# --- LOGIQUE D'ATTRIBUTION DES BADGES & TRAITEMENT D'IMAGE ---
+# LOGIQUE D'ATTRIBUTION DES BADGES & TRAITEMENT D'IMAGE 
 
 def generer_badge_pour_service(nom_service):
     """Génère un badge unique (ex: A1, A2...) pour un service donné."""
@@ -145,7 +145,7 @@ def obtenir_logo_bleu_buffer(url_logo, couleur_hex="#051059"):
     return None
 
 
-# --- ROUTES PUBLIQUES ---
+
 
 @app.route('/')
 def home():
@@ -219,7 +219,6 @@ def enregistrer_sortie():
     return jsonify({"erreur": "Aucun visiteur actif trouvé avec ce badge."}), 404
 
 
-# --- ROUTES ADMINISTRATION & AUTHENTIFICATION ---
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -276,7 +275,7 @@ def supprimer_membre(membre_id):
     return jsonify({"message": "Membre supprimé avec succès."}), 200
 
 
-# --- ROUTES API ADMINISTRATEUR ---
+
 
 @app.route('/api/admin/stats', methods=['GET'])
 @admin_requis
@@ -359,7 +358,7 @@ def exporter_rapport():
     visites = lire_visites()
     membres = {str(m['id']): m['nom'] for m in lire_membres()}
 
-    # --- CALCUL DU DÉBUT DE LA SEMAINE ACTUELLE (Lundi 00:00:00) 
+     
     maintenant = datetime.now()
     debut_semaine = maintenant.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=maintenant.weekday())
 
@@ -465,7 +464,7 @@ def exporter_rapport():
     return jsonify({"erreur": "Format non supporté"}), 400
 
 
-# --- LANCEMENT DU SERVEUR ---
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
