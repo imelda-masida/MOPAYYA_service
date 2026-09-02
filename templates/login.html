@@ -7,39 +7,43 @@
     <title>Connexion Administration - MOPAYA</title>
     <style>
         :root {
-            --mopaya-green: #051059;
-            --mopaya-green-dark: #051059;
+            --mopaya-blue: #051059;
+            --mopaya-blue-dark: #030a3a;
         }
-           
+        
+        body {
+            background-color: var(--mopaya-blue) !important;
+        }
+
         /* Titre de l'administration */
-        .text-green {
-            color: var(--mopaya-bue) !important;
+        .text-blue {
+            color: var(--mopaya-blue) !important;
         }
 
         /* Bouton principal de connexion */
         .btn-success {
-            background-color: var(--mopaya-green) !important;
-            border-color: var(--mopaya-green) !important;
+            background-color: var(--mopaya-blue) !important;
+            border-color: var(--mopaya-blue) !important;
             padding: 10px;
             font-weight: 600;
         }
 
         .btn-success:hover {
-            background-color: var(--mopaya-green-dark) !important;
-            border-color: var(--mopaya-green-dark) !important;
+            background-color: var(--mopaya-blue-dark) !important;
+            border-color: var(--mopaya-blue-dark) !important;
         }
 
-        /* Bordure verte au focus sur les champs de saisie */
+        /* Focus sur les champs de saisie */
         .form-control:focus {
             border-color: var(--mopaya-blue) !important;
-            box-shadow: 0 0 0 0.05 rem #051059!important;
+            box-shadow: 0 0 0 0.25rem rgba(5, 16, 89, 0.25) !important;
         }
     </style>
 </head>
-<body class="bg-light d-flex align-items-center vh-100">
+<body class="d-flex align-items-center vh-100">
     <div class="container" style="max-width: 400px;">
-        <div class="card shadow-sm p-4 border-0">
-            <h3 class="text-center mb-1 fw-bold text-green">MOPAYA</h3>
+        <div class="card shadow-lg p-4 border-0 rounded-3">
+            <h3 class="text-center mb-1 fw-bold text-blue">MOPAYA</h3>
             <p class="text-center text-muted mb-4 small">Espace Administration</p>
 
             {% if erreur %}
@@ -55,11 +59,11 @@
                     <label class="form-label fw-semibold text-secondary">Mot de passe</label>
                     <input type="password" name="mot_de_passe" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-success w-100">Se connecter</button>
+                <button type="submit" class="btn btn-success w-100 text-white">Se connecter</button>
             </form>
             
             <div class="text-center mt-3">
-                <a href="/" class="text-muted text-decoration-none small">← Retour à l'accueil</a>
+                <a href="/" class="text-muted text-decoration-none small"><- Retour à l'accueil</a>
             </div>
         </div>
     </div>

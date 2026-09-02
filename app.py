@@ -2,8 +2,10 @@ import csv
 import io
 import json
 import os
+import re
+import tempfile
 from datetime import datetime, timedelta
-from functools import wraps
+from functools import lru_cache, wraps
 
 from flask import (
     Flask,
@@ -26,17 +28,18 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.platypus import Image as RLImage, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
-# --- CONFIGURATION INITIALE ---
+# CONFIGURATION INITIALE 
 
 app = Flask(__name__)
-app.secret_key = 'votre_cle_secrete_ici'
+# Utilisation d'une clé d'environnement avec une valeur dynamique par défaut en dev
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24).hex())
 
 FICHIER_MEMBRES = 'membres.json'
 FICHIER_VISITES = 'visites.json'
 
 # Mappage des services/départements aux lettres de badge
 DEPARTEMENT_PREFIXES = {
-    'IT': 'A',
+    'Informatique': 'A',
     'Ressources Humaines': 'B',
     'Comptabilité': 'C',
     'Direction': 'D',
@@ -57,7 +60,7 @@ def admin_requis(f):
     return decorated_function
 
 
-# GESTION DES FICHIERS JSON 
+# GESTION SÉCURISÉE ET ATOMIQUE DES FICHIERS JSON 
 
 def lire_membres():
     """Lit la liste des membres depuis membres.json."""
@@ -77,9 +80,12 @@ def lire_membres():
         return []
 
 def sauvegarder_membres(liste_membres):
-    """Enregistre la liste des membres dans membres.json."""
-    with open(FICHIER_MEMBRES, 'w', encoding='utf-8') as f:
-        json.dump(liste_membres, f, indent=4, ensure_ascii=False)
+    """Enregistre la liste des membres de façon atomique dans membres.json."""
+    dossier = os.path.dirname(os.path.abspath(FICHIER_MEMBRES))
+    with tempfile.NamedTemporaryFile('w', dir=dossier, delete=False, encoding='utf-8') as tf:
+        json.dump(liste_membres, tf, indent=4, ensure_ascii=False)
+        temp_name = tf.name
+    os.replace(temp_name, FICHIER_MEMBRES)
 
 def lire_visites():
     """Lit toutes les visites enregistrées dans visites.json."""
@@ -94,9 +100,12 @@ def lire_visites():
         return []
 
 def sauvegarder_visites(liste_visites):
-    """Enregistre la liste des visites dans visites.json."""
-    with open(FICHIER_VISITES, 'w', encoding='utf-8') as f:
-        json.dump(liste_visites, f, indent=4, ensure_ascii=False)
+    """Enregistre la liste des visites de façon atomique dans visites.json."""
+    dossier = os.path.dirname(os.path.abspath(FICHIER_VISITES))
+    with tempfile.NamedTemporaryFile('w', dir=dossier, delete=False, encoding='utf-8') as tf:
+        json.dump(liste_visites, tf, indent=4, ensure_ascii=False)
+        temp_name = tf.name
+    os.replace(temp_name, FICHIER_VISITES)
 
 
 # LOGIQUE D'ATTRIBUTION DES BADGES & TRAITEMENT D'IMAGE 
@@ -123,8 +132,9 @@ def generer_badge_pour_service(nom_service):
 
     return None
 
-def obtenir_logo_bleu_buffer(url_logo, couleur_hex="#051059"):
-    """Télécharge l'image PNG distante et la recolore en bleu."""
+@lru_cache(maxsize=4)
+def obtenir_logo_bleu_bytes(url_logo, couleur_hex="#051059"):
+    """Télécharge, recolore l'image distante en bleu et conserve le résultat en cache."""
     try:
         response = requests.get(url_logo, timeout=5)
         if response.status_code == 200:
@@ -138,14 +148,18 @@ def obtenir_logo_bleu_buffer(url_logo, couleur_hex="#051059"):
             
             buffer_img = io.BytesIO()
             nouvelle_img.save(buffer_img, format="PNG")
-            buffer_img.seek(0)
-            return buffer_img
+            return buffer_img.getvalue()
     except Exception as e:
-        print(f"Erreur de traitement du logo : {e}")
+        app.logger.error(f"Erreur de traitement du logo : {e}")
     return None
 
+def obtenir_logo_bleu_buffer(url_logo, couleur_hex="#051059"):
+    """Retourne un BytesIO réutilisable à partir du cache."""
+    data = obtenir_logo_bleu_bytes(url_logo, couleur_hex)
+    return io.BytesIO(data) if data else None
 
 
+# ROUTES PUBLIQUES & API VISITEL 
 
 @app.route('/')
 def home():
@@ -158,10 +172,37 @@ def get_membres():
 @app.route('/api/visites/entree', methods=['POST'])
 def enregistrer_entree():
     data = request.get_json() or {}
+    
+    nom_complet = (data.get("nom_complet") or "").strip()
+    telephone = (data.get("telephone") or "").strip()
+    fonction = (data.get("fonction") or "").strip()
+    adresse = (data.get("adresse") or "").strip()
+    genre = (data.get("genre") or "").strip()
+    membre_id = data.get("membre_id")
+
+    # --- VALIDATION DES DONNÉES ---
+
+    # 1. Vérification des champs requis
+    if not nom_complet or not telephone or not membre_id:
+        return jsonify({"erreur": "Veuillez remplir tous les champs obligatoires."}), 400
+
+    # 2. Validation du nom complet : uniquement lettres, espaces, tirets et apostrophes
+    if not re.match(r"^[A-Za-zÀ-ÿ\s'-]+$", nom_complet):
+        return jsonify({"erreur": "Le nom complet ne doit contenir que des lettres."}), 400
+
+    # 3. Validation du téléphone : exige exactement 10 chiffres
+    if not re.match(r"^\d{10}$", telephone):
+        return jsonify({"erreur": "Ce numéro de téléphone est invalide."}), 400
+
+    # 4. Validation de la fonction (si renseignée) : lettres, espaces et tirets
+    if fonction and not re.match(r"^[A-Za-zÀ-ÿ\s'-]+$", fonction):
+        return jsonify({"erreur": "La fonction ne doit contenir que des lettres."}), 400
+
+    # --- SUITE DU TRAITEMENT ---
+
     visites = lire_visites()
     membres = lire_membres()
 
-    membre_id = data.get("membre_id")
     hôte = next((m for m in membres if str(m.get("id")) == str(membre_id)), None)
 
     if not hôte:
@@ -179,15 +220,16 @@ def enregistrer_entree():
 
     nouvelle_visite = {
         "id": nouveau_id,
-        "nom_complet": data.get("nom_complet"),
-        "telephone": data.get("telephone"),
-        "fonction": data.get("fonction"),
-        "adresse": data.get("adresse"),
-        "genre": data.get("genre"),
+        "nom_complet": nom_complet,
+        "telephone": telephone,
+        "fonction": fonction,
+        "adresse": adresse,
+        "genre": genre,
         "membre_id": membre_id,
         "badge": badge,
         "heure_entree": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        "heure_sortie": None
+        "heure_sortie": None,
+        "exporte": False
     }
 
     visites.append(nouvelle_visite)
@@ -219,6 +261,7 @@ def enregistrer_sortie():
     return jsonify({"erreur": "Aucun visiteur actif trouvé avec ce badge."}), 404
 
 
+# ROUTES D'ADMINISTRATION 
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -275,7 +318,7 @@ def supprimer_membre(membre_id):
     return jsonify({"message": "Membre supprimé avec succès."}), 200
 
 
-
+# STATISTIQUES ET RAPPORTS 
 
 @app.route('/api/admin/stats', methods=['GET'])
 @admin_requis
@@ -355,31 +398,42 @@ def api_admin_visites():
 @admin_requis
 def exporter_rapport():
     fmt = request.args.get('format', 'csv').lower()
+    forcer_tous = request.args.get('tous', '0') == '1'
+
     visites = lire_visites()
     membres = {str(m['id']): m['nom'] for m in lire_membres()}
 
-     
     maintenant = datetime.now()
     debut_semaine = maintenant.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=maintenant.weekday())
 
-    visites_semaine = []
+    visites_a_exporter = []
+    ids_a_exporter = set()
 
     for v in visites:
         h_entree = v.get('heure_entree', '')
         if h_entree:
             try:
                 dt_entree = datetime.strptime(h_entree, '%Y-%m-%d %H:%M:%S')
-                if dt_entree >= debut_semaine:
-                    visites_semaine.append(v)
+                est_cette_semaine = dt_entree >= debut_semaine
+                deja_exporte = v.get('exporte', False)
+
+                if est_cette_semaine and (forcer_tous or not deja_exporte):
+                    visites_a_exporter.append(v)
+                    ids_a_exporter.add(v.get('id'))
             except ValueError:
                 continue
 
+    if not visites_a_exporter:
+        return jsonify({"message": "Aucune nouvelle visite à exporter pour cette semaine."}), 200
+
+    # --- GENERATION EXPORT CSV ---
     if fmt == 'csv':
         output = io.StringIO()
+        output.write('\ufeff')
         writer = csv.writer(output, delimiter=';')
         writer.writerow(['ID', 'Visiteur', 'Téléphone', 'Fonction', 'Hôte Visité', 'Badge', 'Entrée', 'Sortie'])
 
-        for v in visites_semaine:
+        for v in visites_a_exporter:
             nom_hote = membres.get(str(v.get('membre_id')), 'Hôte inconnu')
             writer.writerow([
                 v.get('id', ''),
@@ -392,17 +446,23 @@ def exporter_rapport():
                 v.get('heure_sortie') or 'En cours'
             ])
 
+        # Marquage comme exporté
+        for v in visites:
+            if v.get('id') in ids_a_exporter:
+                v['exporte'] = True
+        sauvegarder_visites(visites)
+
         response = make_response(output.getvalue())
-        response.headers["Content-Disposition"] = f"attachment; filename=rapport_visites_{datetime.now().strftime('%Y%m%d')}.csv"
+        response.headers["Content-Disposition"] = f"attachment; filename=rapport_visites_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         response.headers["Content-type"] = "text/csv; charset=utf-8"
         return response
 
+    # --- GENERATION EXPORT PDF ---
     elif fmt == 'pdf':
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
         elements = []
 
-        # En-tête : Logo en bleu
         url_logo = "https://group-tia.com/wp-content/uploads/2024/04/logo-GROUP-tia-inverse.png"
         logo_buffer = obtenir_logo_bleu_buffer(url_logo, couleur_hex="#051059")
 
@@ -421,13 +481,13 @@ def exporter_rapport():
             spaceAfter=6
         )
 
-        elements.append(Paragraph("MOPAYA - Rapport Hebdomadaire des Visites", titre_style))
+        elements.append(Paragraph("MOPAYA - Rapport Nouveaux Visiteurs", titre_style))
         elements.append(Paragraph(f"Généré le : {datetime.now().strftime('%d/%m/%Y à %H:%M')}", styles['Normal']))
         elements.append(Spacer(1, 15))
 
         data = [['Visiteur', 'Téléphone', 'Hôte', 'Badge', 'Entrée', 'Sortie']]
 
-        for v in visites_semaine:
+        for v in visites_a_exporter:
             nom_hote = membres.get(str(v.get('membre_id')), 'Inconnu')
             data.append([
                 v.get('nom_complet', '-'),
@@ -455,15 +515,19 @@ def exporter_rapport():
         elements.append(t)
         doc.build(elements)
 
+        # Marquage comme exporté
+        for v in visites:
+            if v.get('id') in ids_a_exporter:
+                v['exporte'] = True
+        sauvegarder_visites(visites)
+
         buffer.seek(0)
         response = make_response(buffer.getvalue())
-        response.headers["Content-Disposition"] = f"attachment; filename=rapport_visites_{datetime.now().strftime('%Y%m%d')}.pdf"
+        response.headers["Content-Disposition"] = f"attachment; filename=rapport_visites_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
         response.headers["Content-type"] = "application/pdf"
         return response
 
     return jsonify({"erreur": "Format non supporté"}), 400
-
-
 
 
 if __name__ == '__main__':

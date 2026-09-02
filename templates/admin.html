@@ -13,6 +13,7 @@
             --mopaya-red: #9b1414;
         }
 
+        
         .bg-primary {
             background-color: var(--mopaya-blue) !important;
         }
@@ -54,7 +55,7 @@
             <a class="navbar-brand fw-bold" href="#">MOPAYA - Administration</a>
             <div class="d-flex gap-2">
                 <a href="/" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1">Accueil</a>
-                <a href="/admin/logout" class="btn btn-danger btn-sm">Déconnexion</a>
+               <!--<a href="/admin/logout" class="btn btn-danger btn-sm">Déconnexion</a>-->
             </div>
         </div>
     </nav>
@@ -89,11 +90,11 @@
             <form action="/admin/membres/ajouter" method="POST" class="row g-3 align-items-end">
                 <div class="col-md-5">
                     <label for="nom_membre" class="form-label text-muted fw-semibold">Nom complet</label>
-                    <input type="text" id="nom_membre" name="nom" class="form-control" placeholder="Ex: Marc Kabora" required>
+                    <input type="text" id="nom_membre" name="nom" class="form-control" placeholder="" required>
                 </div>
                 <div class="col-md-5">
                     <label for="service_membre" class="form-label text-muted fw-semibold">Département</label>
-                    <input type="text" id="service_membre" name="service" class="form-control" placeholder="Ex: Comptabilité" required>
+                    <input type="text" id="service_membre" name="service" class="form-control" placeholder="" required>
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success w-100 fw-semibold">Ajouter</button>

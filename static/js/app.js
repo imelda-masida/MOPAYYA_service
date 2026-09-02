@@ -28,6 +28,9 @@ const traductions = {
         lblBadgeCode: "Entrez la lettre | code de votre badge ",
         btnValiderSortie: "Restituer le badge & Sortir",
         msgAlertHote: "Veuillez sélectionner le membre que vous venez visiter.",
+        msgErrNom: "Le nom ne doit contenir que des lettres.",
+        msgErrTel: "Le téléphone doit contenir exactement jusqu'à 10 chiffres.",
+        msgErrFonction: "La fonction ne doit contenir que des lettres.",
         confEntreeTitre: "Entrée enregistrée !",
         confEntreeMsg: "Bienvenue ! Votre badge vous a été attribué.",
         confSortieTitre: "Sortie enregistrée !",
@@ -55,6 +58,9 @@ const traductions = {
         lblBadgeCode: "Enter your badge letter | code ",
         btnValiderSortie: "Return badge & Exit",
         msgAlertHote: "Please select the member you are visiting.",
+        msgErrNom: "Full name must only contain letters.",
+        msgErrTel: "Phone number must contain up to 10 digits maximum.",
+        msgErrFonction: "Job title must only contain letters.",
         confEntreeTitre: "Entry Recorded!",
         confEntreeMsg: "Welcome! Your badge has been assigned.",
         confSortieTitre: "Check Out Recorded!",
@@ -130,7 +136,6 @@ function afficherEtape(stepId, estUnRetour = false) {
         targetStep.classList.remove('hidden');
     }
 
-    // Enregistre l'étape dans l'historique si ce n'est pas une marche arrière
     if (!estUnRetour) {
         historiqueEtapes.push(stepId);
     }
@@ -138,13 +143,8 @@ function afficherEtape(stepId, estUnRetour = false) {
 
 function etapePrecedente() {
     if (historiqueEtapes.length > 1) {
-        // Supprime l'étape actuelle
         historiqueEtapes.pop();
-        
-        // Récupère l'étape précédente
         const etapePrecedenteId = historiqueEtapes[historiqueEtapes.length - 1];
-        
-        // Affiche l'étape précédente sans réenregistrer dans la pile
         afficherEtape(etapePrecedenteId, true);
     }
 }
@@ -198,7 +198,7 @@ function validerHote() {
     afficherEtape('step-form');
 }
 
-// REQUÊTES API (FETCH)
+// REQUÊTES API (FETCH) & VALIDATION DES CHAMPS
 
 async function chargerMembres() {
     const select = document.getElementById('select-hote');
@@ -230,12 +230,38 @@ async function soumettreEntree(event) {
     event.preventDefault();
     const t = traductions[sessionData.langue || 'fr'];
 
+    const nomComplet = document.getElementById('nom').value.trim();
+    const telephone = document.getElementById('tel').value.trim();
+    const fonction = document.getElementById('fonction').value.trim();
+    const adresse = document.getElementById('adresse').value.trim();
+    const genre = document.getElementById('genre').value;
+
+    // Regex : Lettres uniquement (avec accents, espaces, tirets et apostrophes)
+    const regexLettres = /^[A-Za-zÀ-ÿ\s'-]+$/;
+    // Regex : Chiffres uniquement (1 à 10 max)
+    const regexTel = /^\d{1,10}$/;
+
+    if (!regexLettres.test(nomComplet)) {
+        alert(t.msgErrNom);
+        return;
+    }
+
+    if (!regexTel.test(telephone)) {
+        alert(t.msgErrTel);
+        return;
+    }
+
+    if (fonction && !regexLettres.test(fonction)) {
+        alert(t.msgErrFonction);
+        return;
+    }
+
     const payload = {
-        nom_complet: document.getElementById('nom').value.trim(),
-        telephone: document.getElementById('tel').value.trim(),
-        fonction: document.getElementById('fonction').value.trim(),
-        adresse: document.getElementById('adresse').value.trim(),
-        genre: document.getElementById('genre').value,
+        nom_complet: nomComplet,
+        telephone: telephone,
+        fonction: fonction,
+        adresse: adresse,
+        genre: genre,
         membre_id: sessionData.hote_id,
         langue: sessionData.langue
     };
@@ -294,7 +320,37 @@ async function soumettreSortie(event) {
     }
 }
 
+// INITIALISATION & RESTRICTION DES CHAMPS EN TEMPS RÉEL
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Restriction en temps réel pour le Nom (Lettres uniquement)
+    const inputNom = document.getElementById('nom');
+    if (inputNom) {
+        inputNom.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^A-Za-zÀ-ÿ\s'-]/g, '');
+        });
+    }
+
+    // Restriction en temps réel pour le Téléphone (Chiffres uniquement, max 10)
+    const inputTel = document.getElementById('tel');
+    if (inputTel) {
+        inputTel.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/[^0-9]/g, '');
+            if (val.length > 10) {
+                val = val.slice(0, 10);
+            }
+            e.target.value = val;
+        });
+    }
+
+    // Restriction en temps réel pour la Fonction (Lettres uniquement)
+    const inputFonction = document.getElementById('fonction');
+    if (inputFonction) {
+        inputFonction.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^A-Za-zÀ-ÿ\s'-]/g, '');
+        });
+    }
+
     const btnRapport = document.getElementById('btn-rapport');
     if (btnRapport) {
         btnRapport.addEventListener('click', () => {
