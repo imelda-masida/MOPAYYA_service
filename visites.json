@@ -82,5 +82,19 @@
         "badge": "C1",
         "heure_entree": "2026-09-02 09:24:11",
         "heure_sortie": "2026-09-02 09:25:45"
+    },
+    {
+        "id": 8,
+        "nom_complet": "test",
+        "telephone": "0986656778",
+        "fonction": "test",
+        "motif de la visite": "",
+        "adresse": "test",
+        "genre": "M",
+        "membre_id": "2",
+        "badge": "B1",
+        "heure_entree": "2026-09-05 21:49:44",
+        "heure_sortie": null,
+        "exporte": false
     }
 ]

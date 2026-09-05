@@ -176,6 +176,7 @@ def enregistrer_entree():
     nom_complet = (data.get("nom_complet") or "").strip()
     telephone = (data.get("telephone") or "").strip()
     fonction = (data.get("fonction") or "").strip()
+    motif = (data.get("motif") or "").strip()
     adresse = (data.get("adresse") or "").strip()
     genre = (data.get("genre") or "").strip()
     membre_id = data.get("membre_id")
@@ -223,6 +224,7 @@ def enregistrer_entree():
         "nom_complet": nom_complet,
         "telephone": telephone,
         "fonction": fonction,
+        "motif de la visite" : motif,
         "adresse": adresse,
         "genre": genre,
         "membre_id": membre_id,

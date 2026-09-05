@@ -20,6 +20,7 @@ const traductions = {
         lblTel: "Numéro de téléphone ",
         lblFonction: "Fonction | Entreprise",
         lblAdresse: "Adresse",
+        lblMotif: "Motif de la visite",
         lblGenre: "Genre ",
         optionM: "Masculin",
         optionF: "Féminin",
@@ -50,6 +51,7 @@ const traductions = {
         lblTel: "Phone Number ",
         lblFonction: "Job Title | Company",
         lblAdresse: "Address",
+        lblMotif: "Reason for Visit",
         lblGenre: "Gender ",
         optionM: "Male",
         optionF: "Female",
@@ -102,7 +104,8 @@ function appliquerTraduction() {
         labelsForm[1].textContent = t.lblTel;
         labelsForm[2].textContent = t.lblFonction;
         labelsForm[3].textContent = t.lblAdresse;
-        labelsForm[4].textContent = t.lblGenre;
+        labelsForm[4].textContent = t.lblMotif;
+        labelsForm[5].textContent = t.lblGenre;
     }
     const selectGenre = document.getElementById('genre');
     if (selectGenre && selectGenre.options.length >= 2) {
