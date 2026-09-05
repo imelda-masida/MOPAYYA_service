@@ -483,7 +483,7 @@ def exporter_rapport():
             spaceAfter=6
         )
 
-        elements.append(Paragraph("MOPAYA - Rapport Nouveaux Visiteurs", titre_style))
+        elements.append(Paragraph("MOPAYA - Rapport sur les Visiteurs en semaine", titre_style))
         elements.append(Paragraph(f"Généré le : {datetime.now().strftime('%d/%m/%Y à %H:%M')}", styles['Normal']))
         elements.append(Spacer(1, 15))
 

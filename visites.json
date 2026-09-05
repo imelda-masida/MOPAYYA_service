@@ -57,7 +57,8 @@
         "membre_id": "1",
         "badge": "X1",
         "heure_entree": "2026-09-01 15:26:48",
-        "heure_sortie": "2026-09-01 15:31:25"
+        "heure_sortie": "2026-09-01 15:31:25",
+        "exporte": true
     },
     {
         "id": 6,
@@ -69,7 +70,8 @@
         "membre_id": "2",
         "badge": "B1",
         "heure_entree": "2026-09-02 09:17:49",
-        "heure_sortie": "2026-09-02 09:25:09"
+        "heure_sortie": "2026-09-02 09:25:09",
+        "exporte": true
     },
     {
         "id": 7,
@@ -81,7 +83,8 @@
         "membre_id": "3",
         "badge": "C1",
         "heure_entree": "2026-09-02 09:24:11",
-        "heure_sortie": "2026-09-02 09:25:45"
+        "heure_sortie": "2026-09-02 09:25:45",
+        "exporte": true
     },
     {
         "id": 8,
@@ -94,7 +97,7 @@
         "membre_id": "2",
         "badge": "B1",
         "heure_entree": "2026-09-05 21:49:44",
-        "heure_sortie": null,
-        "exporte": false
+        "heure_sortie": "2026-09-05 22:01:01",
+        "exporte": true
     }
 ]
